@@ -1,0 +1,14 @@
+#kaocha/v1
+{:plugins
+ [:orchestra
+  :preloads
+  :kaocha.plugin.alpha/spec-test-check]
+
+ :kaocha.plugin.preloads/ns-names
+ [org.sqids.clojure]
+
+ kaocha.spec.test.check/check-asserts?
+ true
+
+ :kaocha.spec.test.check/instrument?
+ true}

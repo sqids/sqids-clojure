@@ -1,0 +1,17 @@
+{:mvn/repos {"sonatype" {:url       "https://oss.sonatype.org/content/repositories/snapshots/"
+                         :snapshots {:enabled true}}}
+ :paths     ["src" "resources"]
+ :deps      {org.clojure/clojure {:mvn/version "1.11.1"}
+             org.sqids/sqids     {:mvn/version "0.1.0-SNAPSHOT"}}
+ :aliases
+ {:dev
+  {:extra-deps {lambdaisland/kaocha    {:mvn/version "1.87.1366"}
+                orchestra/orchestra    {:mvn/version "2021.01.01-1"}
+                org.clojure/test.check {:mvn/version "1.1.1"}}}
+  :test
+  {:main-opts ["-m" "kaocha.runner"]}
+
+  :build
+  {:deps       {io.github.clojure/tools.build {:mvn/version "0.9.6"}
+                slipset/deps-deploy           {:mvn/version "0.2.0"}}
+   :ns-default build}}}
