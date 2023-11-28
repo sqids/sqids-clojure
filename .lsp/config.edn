@@ -1,0 +1,9 @@
+{:auto-add-ns-to-new-files? true
+ :cljfmt {:vars {:enabled? false}
+          :functions {:enabled? false}
+          :types {:enabled? false}
+          :remove-multiple-non-indenting-spaces? true
+          :indents {require [[:inner 2]]
+                    import [[:inner 2]]
+                    defprotocol [[:inner 1]]
+                    defrecord [[:inner 1]]}}}
