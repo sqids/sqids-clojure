@@ -1,0 +1,10 @@
+{:paths ["src"]
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+       ;; wait for Maven release org.sqids/sqids {:mvn/version "0.1.0-SNAPSHOT"}
+        org.sqids/sqids {:local/root "vendor/sqids.jar"}}
+
+ :aliases {:test {:main-opts ["-m" "kaocha.runner"]
+                  :extra-paths ["test"]
+                  :jvm-opts ["-XX:-OmitStackTraceInFastThrow"
+                             "-Duser.timezone=UTC"]
+                  :extra-deps {lambdaisland/kaocha {:mvn/version "1.87.1366"}}}}}

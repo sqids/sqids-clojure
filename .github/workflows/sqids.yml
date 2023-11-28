@@ -1,0 +1,31 @@
+name: sqids-clojure
+
+on:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  athrun-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    container:
+      image: clojure:openjdk-17-tools-deps-slim-buster
+    steps:
+    - uses: actions/checkout@v4
+    - name: Cache Clojure deps
+      uses: actions/cache@v3
+      with:
+        path: /root/.m2
+        key: v2-deps-${{ hashFiles('deps.edn') }}
+        restore-keys: |
+          v2-deps-
+          v2-deps-${{ hashFiles('deps.edn') }}
+
+    - name: Run tests
+      run: |
+        make get-jar
+        make test
