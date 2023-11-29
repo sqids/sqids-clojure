@@ -24,6 +24,12 @@
   :test
   {:main-opts ["-m" "kaocha.runner"]}
 
+  :cljstyle
+  {:extra-deps
+   {mvxcvi/cljstyle {:mvn/version "0.15.0"}}
+
+   :main-opts ["-m" "cljstyle.main"]}
+
   :build
   {:deps
    {io.github.clojure/tools.build {:mvn/version "0.9.6"}
