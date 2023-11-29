@@ -26,7 +26,7 @@
    [:licenses
     [:license
      [:name "MIT License"]
-     [:url "https://choosealicense.com/licenses/mit/"]]]
+     [:url "https://spdx.org/licenses/MIT.html"]]]
    [:developers
     [:developer
      [:name "Rob Hanlon"]]]
