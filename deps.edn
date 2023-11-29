@@ -31,7 +31,7 @@
    :main-opts ["-m" "cljstyle.main"]}
 
   :clj-kondo
-  {:replace-deps {clj-kondo/clj-kondo {:mvn/version "v2023.10.20"}}
+  {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2023.10.20"}}
    :main-opts    ["-m" "clj-kondo.main"]}
 
   :build
