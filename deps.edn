@@ -1,5 +1,5 @@
 {:mvn/repos
- {"sonatype" {:url       "https://oss.sonatype.org/content/repositories/snapshots/"
+ {"sonatype" {:url       "https://s01.oss.sonatype.org/content/repositories/snapshots/"
               :snapshots {:enabled true}}}
 
  :paths
