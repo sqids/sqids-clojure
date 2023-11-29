@@ -25,11 +25,11 @@
    [:url "https://github.com/sqids/sqids-clojure"]
    [:licenses
     [:license
-     [:name "Eclipse Public License"]
-     [:url "http://www.eclipse.org/legal/epl-v10.html"]]]
+     [:name "MIT License"]
+     [:url "https://choosealicense.com/licenses/mit/"]]]
    [:developers
     [:developer
-     [:name "Rob.hanlon"]]]
+     [:name "Rob Hanlon"]]]
    [:scm
     [:url "https://github.com/sqids/sqids-clojure"]
     [:connection "scm:git:https://github.com/sqids/sqids-clojure.git"]
