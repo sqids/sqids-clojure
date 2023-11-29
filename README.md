@@ -6,8 +6,8 @@ URL-safe ID generation and decoding back into numbers for quicker database
 lookups.
 
 `sqids-clojure` wraps [`sqids-java`](https://github.com/sqids/sqids-java),
-delegating the implementations of encoding and decoding to the `sqids-java` and
-its version follows `sqids-java`'s major and minor versions.
+delegating most of the implementation to `sqids-java`. `sqid-clojure`'s version
+follows `sqids-java`'s major and minor versions.
 
 If you notice an issue with decoding and encoding, please refer to `sqids-java`
 for possible issues.
@@ -85,7 +85,7 @@ Randomize IDs by providing a custom alphabet:
 
 Prevent specific words from appearing anywhere in the auto-generated IDs:
 
-```java
+```clojure
 (def sqids
   (sqids/sqids {:block-list #{"86Rf07"}}))
 
