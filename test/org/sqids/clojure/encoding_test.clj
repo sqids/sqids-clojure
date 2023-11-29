@@ -1,11 +1,13 @@
 (ns org.sqids.clojure.encoding-test
   (:require
-   [clojure.spec.alpha :as s]
-   [clojure.test :refer [deftest is]]
-   [org.sqids.clojure :as sut]))
+    [clojure.spec.alpha :as s]
+    [clojure.test :refer [deftest is]]
+    [org.sqids.clojure :as sut]))
+
 
 (def sqids
   (sut/sqids))
+
 
 (deftest simple-test
   (let [numbers [1 2 3]
@@ -13,17 +15,20 @@
     (is (= id (sut/encode sqids numbers)))
     (is (= numbers (sut/decode sqids id)))))
 
+
 (deftest different-inputs-test
   (let [numbers [0 0 0 1 2 3 100 1000 100000 1000000 Long/MAX_VALUE]]
     (is (= numbers (->> numbers
                         (sut/encode sqids)
                         (sut/decode sqids))))))
 
+
 (deftest incremental-number-test
   (doseq [[id & numbers] [["bM" 0] ["Uk" 1] ["gb" 2] ["Ef" 3] ["Vq" 4]
                           ["uw" 5] ["OI" 6] ["AX" 7] ["p6" 8] ["nJ" 9]]]
     (is (= id (sut/encode sqids numbers)))
     (is (= numbers (sut/decode sqids id)))))
+
 
 (deftest incremental-numbers-test
   (doseq [[id & numbers]
@@ -32,20 +37,25 @@
     (is (= id (sut/encode sqids numbers)))
     (is (= numbers (sut/decode sqids id)))))
 
+
 (deftest multi-input-test
   (let [numbers (range 0 100)]
     (is (= numbers (->> numbers
                         (sut/encode sqids)
                         (sut/decode sqids))))))
 
+
 (deftest encode-no-numbers-test
   (is (= "" (sut/encode sqids []))))
+
 
 (deftest decode-empty-string-test
   (is (= [] (sut/decode sqids ""))))
 
+
 (deftest decode-invalid-character-test
   (is (= [] (sut/decode sqids "*"))))
+
 
 (defn nat-ints-spec-fails
   [number]
@@ -60,6 +70,7 @@
       (is (= [:nat-ints] path))
       (is (= number val))
       (is (= ::sut/nat-ints (last via))))))
+
 
 (deftest encode-out-of-range-numbers-test
   (nat-ints-spec-fails -1)

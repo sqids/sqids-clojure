@@ -1,24 +1,29 @@
 (ns org.sqids.clojure.min-length-test
   (:require
-   [clojure.spec.alpha :as s]
-   [clojure.test :refer [deftest is]]
-   [org.sqids.clojure :as sut]))
+    [clojure.spec.alpha :as s]
+    [clojure.test :refer [deftest is]]
+    [org.sqids.clojure :as sut]))
+
 
 (def min-length
   (count "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+
 
 (defn make
   [min-length]
   (sut/sqids {:min-length min-length}))
 
+
 (def sqids
   (make min-length))
+
 
 (deftest simple-test
   (let [numbers [1 2 3]
         id      "86Rf07xd4zBmiJXQG6otHEbew02c3PWsUOLZxADhCpKj7aVFv9I8RquYrNlSTM"]
     (is (= id (sut/encode sqids numbers)))
     (is (= numbers (sut/decode sqids id)))))
+
 
 (deftest incremental-test
   (let [numbers [1 2 3]]
@@ -39,6 +44,7 @@
         (is (= id (sut/encode sqids numbers)))
         (is (= numbers (sut/decode sqids id)))))))
 
+
 (deftest incremental-numbers-test
   (doseq [[id & numbers]
           [["SvIzsqYMyQwI3GWgJAe17URxX8V924Co0DaTZLtFjHriEn5bPhcSkfmvOslpBu" 0 0]
@@ -53,6 +59,7 @@
            ["moxr3HqLAK0GsTND6jowfZz3SUx7cQ8aC54Pl1RbIvFXmEJuBMYVeW9yrdOtin" 0 9]]]
     (is (= id (sut/encode sqids numbers)))
     (is (= numbers (sut/decode sqids id)))))
+
 
 (deftest min-lengths-test
   (doseq [min-length [0 1 5 10 min-length]]
