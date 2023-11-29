@@ -18,5 +18,10 @@ jobs:
           curl -L -O https://github.com/clojure/brew-install/releases/latest/download/posix-install.sh
           chmod +x posix-install.sh
           sudo ./posix-install.sh
+          rm posix-install.sh
+      - name: Install pre-commit
+        run: pip3 install pre-commit
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files
       - name: Run tests
         run: bin/kaocha
