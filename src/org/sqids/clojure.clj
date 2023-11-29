@@ -6,9 +6,6 @@
     [clojure.string :as string]))
 
 
-(set! *warn-on-reflection* true)
-
-
 (defn ^:private conform!
   [spec input]
   (let [conformed (s/conform spec input)]
