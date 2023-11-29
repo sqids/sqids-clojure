@@ -7,6 +7,10 @@ repos:
         language: system
         types: [file]
         files: \.(clj[csx]?|edn)$
+  - repo: https://github.com/clj-kondo/clj-kondo
+    rev: v2023.10.20
+    hooks:
+      - id: clj-kondo
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

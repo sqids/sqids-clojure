@@ -1,6 +1,5 @@
 (ns org.sqids.clojure.min-length-test
   (:require
-    [clojure.spec.alpha :as s]
     [clojure.test :refer [deftest is]]
     [org.sqids.clojure :as sut]))
 
