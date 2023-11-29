@@ -4,11 +4,9 @@
     [clojure.tools.build.api :as b]
     [deps-deploy.deps-deploy :as dd]))
 
-
 (def lib 'org.sqids/sqids-clojure)
 (def version "0.1.0-SNAPSHOT")
 (def class-dir "target/classes")
-
 
 (defn test
   "Run all the tests."
@@ -17,7 +15,6 @@
     (when-not (zero? exit)
       (throw (ex-info "Tests failed" {}))))
   opts)
-
 
 (defn- pom-template
   [version]
@@ -36,7 +33,6 @@
     [:developerConnection "scm:git:ssh:git@github.com:sqids/sqids-clojure.git"]
     [:tag (str "v" version)]]])
 
-
 (defn- jar-opts
   [opts]
   (assoc opts
@@ -47,7 +43,6 @@
          :target    "target"
          :src-dirs  ["src"]
          :pom-data  (pom-template version)))
-
 
 (defn ci
   "Run the CI pipeline of tests (and build the JAR)."
@@ -63,14 +58,12 @@
     (b/jar opts))
   opts)
 
-
 (defn install
   "Install the JAR locally."
   [opts]
   (let [opts (jar-opts opts)]
     (b/install opts))
   opts)
-
 
 (defn deploy
   "Deploy the JAR to Clojars."

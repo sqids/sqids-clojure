@@ -10,16 +10,13 @@
      :rename {run t run-all ta}]
     [orchestra.spec.test :as orchestra]))
 
-
 ;; Alter the root *explain-out* binding.
 (alter-var-root #'s/*explain-out* (constantly expound/printer))
-
 
 ;; Set *explain-out* if it's thread-bound, which is necessary for some REPL
 ;; configurations.
 (when (thread-bound? #'s/*explain-out*)
   (set! s/*explain-out* expound/printer))
-
 
 (defn refresh-and-test
   ([refresh-fn kaocha-fn]
@@ -30,31 +27,25 @@
    (orchestra/instrument)
    (kaocha-fn kaocha-opts)))
 
-
 (defn rt
   [& args]
   (apply refresh-and-test r t args))
-
 
 (defn rat
   [& args]
   (apply refresh-and-test ra t args))
 
-
 (defn rta
   [& args]
   (apply refresh-and-test r ta args))
-
 
 (defn rata
   [& args]
   (apply refresh-and-test ra ta args))
 
-
 (defn ratu
   [& args]
   (apply refresh-and-test ra t :unit args))
-
 
 (defn ratg
   [& args]

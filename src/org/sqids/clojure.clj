@@ -5,7 +5,6 @@
     [clojure.spec.gen.alpha :as gen]
     [clojure.string :as string]))
 
-
 (defn ^:private conform!
   [spec input]
   (let [conformed (s/conform spec input)]
@@ -13,28 +12,22 @@
       (throw (ex-info "Invalid input" (s/explain-data spec input))))
     conformed))
 
-
 ;; TODO: Replace with constants from sqids-java once
 ;; https://github.com/sqids/sqids-java/pull/7 is merged
 (def min-alphabet-length 3)
 (def min-length-limit 255)
 
-
 (s/def ::alphabet-string
   string?)
-
 
 (s/def ::alphabet-distinct
   #(apply distinct? %))
 
-
 (s/def ::alphabet-min-length
   #(>= (count %) min-alphabet-length))
 
-
 (s/def ::alphabet-no-multibyte
   #(= (count %) (count (.getBytes ^String %))))
-
 
 (s/def ::alphabet
   (s/with-gen
@@ -52,22 +45,18 @@
           (gen/set (gen/char-alphanumeric))
           (gen/fmap string/join))))
 
-
 (s/def ::min-length (s/int-in 0 (inc min-length-limit)))
 
 (s/def ::block-list (s/coll-of string? :kind set?))
 
-
 (s/def ::options
   (s/keys :opt-un [::alphabet ::min-length ::block-list]))
-
 
 (def default-options
   (conform! ::options
             {:alphabet   org.sqids.Sqids$Builder/DEFAULT_ALPHABET
              :min-length org.sqids.Sqids$Builder/DEFAULT_MIN_LENGTH
              :block-list (set org.sqids.Sqids$Builder/DEFAULT_BLOCK_LIST)}))
-
 
 (defn sqids
   "Constructs an ISqids. Supported options in `options`:
@@ -96,7 +85,6 @@
           (assoc complete-options :instance)
           (conform! ::sqids)))))
 
-
 ;; NOTE: Generative testing is disabled for encode because it may throw a
 ;; RuntimeException.
 (defn ^:no-gen encode
@@ -115,7 +103,6 @@
             (.encode ^org.sqids.Sqids (conform! ::instance instance)
                      (mapv long (conform! ::nat-ints nat-ints)))))
 
-
 (defn decode
   "Decodes a Sqid string into numbers. Arguments:
 
@@ -132,27 +119,22 @@
             (vec (.decode ^org.sqids.Sqids (conform! ::instance instance)
                           (conform! ::sqid sqid)))))
 
-
 (s/def ::instance
   #(instance? org.sqids.Sqids %))
-
 
 (s/def ::sqids
   (s/with-gen
     (s/keys :req-un [::instance ::alphabet ::min-length ::block-list])
     #(gen/fmap sqids (s/gen ::options))))
 
-
 (s/fdef sqids
         :args (s/alt :nullary (s/cat)
                      :unary   (s/cat :options ::options))
         :ret ::sqids)
 
-
 (s/def ::nat-ints (s/coll-of nat-int? :kind sequential?))
 
 (s/def ::ints (s/coll-of int? :kind vector?))
-
 
 (s/def ::sqid
   (s/with-gen
@@ -169,7 +151,6 @@
                    nil))))
            (gen/such-that some?)))))
 
-
 (s/fdef encode
         :args (s/cat :s ::sqids :nat-ints ::nat-ints)
         :ret  ::sqid
@@ -177,7 +158,6 @@
                 (let [{:keys [ret args]}   info
                       {:keys [s nat-ints]} args]
                   (= nat-ints (decode s ret)))))
-
 
 (s/fdef decode
         :args (s/cat :s ::sqids :sqid ::sqid)

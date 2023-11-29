@@ -4,11 +4,9 @@
     [clojure.test :refer [deftest is]]
     [org.sqids.clojure :as sut]))
 
-
 (defn make
   [alphabet]
   (sut/sqids {:alphabet alphabet}))
-
 
 (defn alphabet-spec-fails
   [alphabet root-spec]
@@ -24,14 +22,12 @@
       (is (= alphabet val))
       (is (= root-spec (last via))))))
 
-
 (deftest simple-alphabet-test
   (let [sqids   (make "0123456789abcdef")
         numbers [1 2 3]
         id      "489158"]
     (is (= id (sut/encode sqids numbers)))
     (is (= numbers (sut/decode sqids id)))))
-
 
 (deftest short-alphabet-test
   (let [sqids   (make "abc")
@@ -40,14 +36,11 @@
                         (sut/encode sqids)
                         (sut/decode sqids))))))
 
-
 (deftest multibyte-tests
   (alphabet-spec-fails "ë1092" ::sut/alphabet-no-multibyte))
 
-
 (deftest repeating-alphabet-characters
   (alphabet-spec-fails "aabcdefg" ::sut/alphabet-distinct))
-
 
 (deftest too-short-of-an-alphabet
   (alphabet-spec-fails "ab" ::sut/alphabet-min-length))
