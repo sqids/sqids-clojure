@@ -27,7 +27,7 @@ org.sqids/sqids-clojure {:mvn/version "0.1.0-SNAPSHOT"}
 [Leiningen](https://leiningen.org/) stable dependency information:
 
 ```clojure
-[org.clojure/tools.namespace "0.1.0-SNAPSHOT"]
+[org.sqids/sqids-clojure "0.1.0-SNAPSHOT"]
 ```
 
 After installation, require `sqids-clojure`:
