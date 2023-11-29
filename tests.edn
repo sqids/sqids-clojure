@@ -1,5 +1,8 @@
 #kaocha/v1
-{:plugins
+{:reporter
+ kaocha.report/documentation
+
+ :plugins
  [:orchestra
   :preloads
   :kaocha.plugin.alpha/spec-test-check]
@@ -7,7 +10,10 @@
  :kaocha.plugin.preloads/ns-names
  [org.sqids.clojure]
 
- kaocha.spec.test.check/check-asserts?
+ :kaocha.plugin.capture-output/capture-output?
+ false
+
+ :kaocha.spec.test.check/check-asserts?
  true
 
  :kaocha.spec.test.check/instrument?
