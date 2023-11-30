@@ -18,7 +18,7 @@
 
 (defn- pom-template
   [version]
-  [[:description "FIXME: my new library."]
+  [[:description "Official Clojure port of Sqids. Generate short YouTube-looking IDs from numbers."]
    [:url "https://github.com/sqids/sqids-clojure"]
    [:licenses
     [:license
