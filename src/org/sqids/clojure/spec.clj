@@ -15,8 +15,11 @@
 
 ;; TODO: Replace with constants from sqids-java once
 ;; https://github.com/sqids/sqids-java/pull/7 is merged
-(def min-alphabet-length 3)
-(def min-length-limit 255)
+(def min-alphabet-length
+  3)
+
+(def min-length-limit
+  255)
 
 (defn ^:private sqids
   [& args]
@@ -58,9 +61,11 @@
           (gen/set (gen/char-alphanumeric))
           (gen/fmap string/join))))
 
-(s/def ::min-length (s/int-in 0 (inc min-length-limit)))
+(s/def ::min-length
+  (s/int-in 0 (inc min-length-limit)))
 
-(s/def ::block-list (s/coll-of string? :kind set?))
+(s/def ::block-list
+  (s/coll-of string? :kind set?))
 
 (s/def ::options
   (s/keys :opt-un [::alphabet ::min-length ::block-list]))
@@ -74,13 +79,15 @@
     #(gen/fmap sqids (s/gen ::options))))
 
 (s/fdef sqids
-        :args (s/alt :nullary (s/cat)
-                     :unary   (s/cat :options ::options))
-        :ret ::sqids)
+  :args (s/alt :nullary (s/cat)
+               :unary   (s/cat :options ::options))
+  :ret ::sqids)
 
-(s/def ::nat-ints (s/coll-of nat-int? :kind sequential?))
+(s/def ::nat-ints
+  (s/coll-of nat-int? :kind sequential?))
 
-(s/def ::ints (s/coll-of int? :kind vector?))
+(s/def ::ints
+  (s/coll-of int? :kind vector?))
 
 (s/def ::sqid
   (s/with-gen
@@ -98,28 +105,28 @@
            (gen/such-that some?)))))
 
 (s/fdef org.sqids.clojure/encode
-        :args (s/cat :s ::sqids :nat-ints ::nat-ints)
-        :ret  ::sqid
-        :fn   (fn [info]
-                (let [{:keys [ret args]}   info
-                      {:keys [s nat-ints]} args]
-                  (= nat-ints (decode s ret)))))
+  :args (s/cat :s ::sqids :nat-ints ::nat-ints)
+  :ret  ::sqid
+  :fn   (fn [info]
+          (let [{:keys [ret args]}   info
+                {:keys [s nat-ints]} args]
+            (= nat-ints (decode s ret)))))
 
 (s/fdef org.sqids.clojure/decode
-        :args (s/cat :s ::sqids :sqid ::sqid)
-        :ret  ::ints
-        :fn   (fn [info]
-                (let [{:keys [ret args]} info]
-                  (if (some neg? ret)
-                    true
-                    (let [{:keys [s sqid]}
-                          args
+  :args (s/cat :s ::sqids :sqid ::sqid)
+  :ret  ::ints
+  :fn   (fn [info]
+          (let [{:keys [ret args]} info]
+            (if (some neg? ret)
+              true
+              (let [{:keys [s sqid]}
+                    args
 
-                          expected
-                          (if (set/subset? (set sqid) (-> s :alphabet set))
-                            (->> ret
-                                 (encode s)
-                                 (decode s))
-                            [])]
+                    expected
+                    (if (set/subset? (set sqid) (-> s :alphabet set))
+                      (->> ret
+                           (encode s)
+                           (decode s))
+                      [])]
 
-                      (= ret expected))))))
+                (= ret expected))))))
