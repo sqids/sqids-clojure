@@ -2,7 +2,8 @@
   (:require
     [clojure.spec.alpha :as s]
     [clojure.test :refer [deftest is]]
-    [org.sqids.clojure :as sut]))
+    [org.sqids.clojure :as sut]
+    [org.sqids.clojure.spec :as spec]))
 
 (def sqids
   (sut/sqids))
@@ -59,7 +60,7 @@
     (let [{:keys [path via val]} (first problems)]
       (is (= [:nat-ints] path))
       (is (= number val))
-      (is (= ::sut/nat-ints (last via))))))
+      (is (= ::spec/nat-ints (last via))))))
 
 (deftest encode-out-of-range-numbers-test
   (nat-ints-spec-fails -1)
