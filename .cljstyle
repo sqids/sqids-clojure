@@ -1,0 +1,4 @@
+{:files
+ {:pattern #"\.(clj[csx]?|edn|cljstyle)$"}
+ :rules
+ {:blank-lines {:padding-lines 1}}}

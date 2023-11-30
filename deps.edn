@@ -1,0 +1,43 @@
+{:mvn/repos
+ {"sonatype" {:url       "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+              :snapshots {:enabled true}}}
+
+ :paths
+ ["src"]
+
+ :deps
+ {org.clojure/clojure {:mvn/version "1.11.1"}
+  org.sqids/sqids     {:mvn/version "0.1.0-SNAPSHOT"}}
+
+ :aliases
+ {:dev
+  {:extra-deps
+   {expound/expound             {:mvn/version "0.9.0"}
+    lambdaisland/kaocha         {:mvn/version "1.87.1366"}
+    orchestra/orchestra         {:mvn/version "2021.01.01-1"}
+    org.clojure/test.check      {:mvn/version "1.1.1"}
+    org.clojure/tools.namespace {:mvn/version "1.4.4"}}
+
+   :extra-paths
+   ["test" "dev"]}
+
+  :test
+  {:main-opts ["-m" "kaocha.runner"]}
+
+  :cljstyle
+  {:replace-deps
+   {mvxcvi/cljstyle {:mvn/version "0.15.0"}}
+
+   :main-opts ["-m" "cljstyle.main"]}
+
+  :clj-kondo
+  {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2023.10.20"}}
+   :main-opts    ["-m" "clj-kondo.main"]}
+
+  :build
+  {:replace-deps
+   {io.github.clojure/tools.build {:mvn/version "0.9.6"}
+    slipset/deps-deploy           {:mvn/version "0.2.0"}}
+
+   :ns-default
+   build}}}

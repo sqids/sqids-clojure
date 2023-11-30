@@ -1,0 +1,25 @@
+repos:
+  - repo: local
+    hooks:
+      - id: cljstyle
+        name: cljstyle
+        entry: bin/cljstyle fix
+        language: system
+        types: [file]
+        files: \.(clj[csx]?|edn)$
+  - repo: https://github.com/clj-kondo/clj-kondo
+    rev: v2023.10.20
+    hooks:
+      - id: clj-kondo
+        entry: bin/clj-kondo --lint
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-shebang-scripts-are-executable
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
