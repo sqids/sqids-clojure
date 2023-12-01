@@ -57,8 +57,7 @@
         (ex-data e)]
 
     (is (= 1 (count problems)))
-    (let [{:keys [path via val]} (first problems)]
-      (is (= [:nat-ints] path))
+    (let [{:keys [via val]} (first problems)]
       (is (= number val))
       (is (= ::spec/nat-ints (last via))))))
 

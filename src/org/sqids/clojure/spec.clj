@@ -78,11 +78,6 @@
     (s/keys :req-un [::instance ::alphabet ::min-length ::block-list])
     #(gen/fmap sqids (s/gen ::options))))
 
-(s/fdef sqids
-  :args (s/alt :nullary (s/cat)
-               :unary   (s/cat :options ::options))
-  :ret ::sqids)
-
 (s/def ::nat-ints
   (s/coll-of nat-int? :kind sequential?))
 
@@ -103,6 +98,11 @@
                    ;; present.
                    nil))))
            (gen/such-that some?)))))
+
+(s/fdef org.sqids.clojure/sqids
+  :args (s/alt :nullary (s/cat)
+               :unary   (s/cat :options ::options))
+  :ret ::sqids)
 
 (s/fdef org.sqids.clojure/encode
   :args (s/cat :s ::sqids :nat-ints ::nat-ints)
