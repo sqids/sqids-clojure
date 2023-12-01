@@ -50,7 +50,7 @@
   cannot be generated due to too many attempts."
   [s nat-ints]
   (let [^org.sqids.Sqids instance
-        (:instance (spec/conform! ::spec/sqids s))
+        (spec/conform! ::spec/instance (:instance s))
 
         numbers
         (mapv long (spec/conform! ::spec/nat-ints nat-ints))
@@ -73,7 +73,7 @@
   considered invalid."
   [s sqid]
   (let [^org.sqids.Sqids instance
-        (:instance (spec/conform! ::spec/sqids s))
+        (spec/conform! ::spec/instance (:instance s))
 
         id
         (spec/conform! ::spec/sqid sqid)
