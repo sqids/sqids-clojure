@@ -19,6 +19,8 @@ jobs:
           chmod +x posix-install.sh
           sudo ./posix-install.sh
           rm posix-install.sh
+      - name: Install deps
+        run: clojure -A"$(echo '(->> "./deps.edn" slurp read-string :aliases keys (apply str) print)' | clojure -M -)" -P
       - name: Install pre-commit
         run: pip3 install pre-commit
       - name: Run pre-commit hooks
