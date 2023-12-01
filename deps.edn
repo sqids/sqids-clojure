@@ -6,7 +6,8 @@
  ["src"]
 
  :deps
- {org.clojure/clojure {:mvn/version "1.11.1"}
+ {borkdude/dynaload   {:mvn/version "0.3.5"}
+  org.clojure/clojure {:mvn/version "1.11.1"}
   org.sqids/sqids     {:mvn/version "0.1.0-SNAPSHOT"}}
 
  :aliases

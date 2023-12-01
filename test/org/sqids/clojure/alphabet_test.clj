@@ -2,7 +2,8 @@
   (:require
     [clojure.spec.alpha :as s]
     [clojure.test :refer [deftest is]]
-    [org.sqids.clojure :as sut]))
+    [org.sqids.clojure :as sut]
+    [org.sqids.clojure.spec :as spec]))
 
 (defn make
   [alphabet]
@@ -18,7 +19,7 @@
 
     (is (= 1 (count problems)))
     (let [{:keys [path via val]} (first problems)]
-      (is (= [:unary :options :alphabet] path))
+      (is (= [:alphabet] path))
       (is (= alphabet val))
       (is (= root-spec (last via))))))
 
@@ -37,10 +38,10 @@
                         (sut/decode sqids))))))
 
 (deftest multibyte-tests
-  (alphabet-spec-fails "ë1092" ::sut/alphabet-no-multibyte))
+  (alphabet-spec-fails "ë1092" ::spec/alphabet-no-multibyte))
 
 (deftest repeating-alphabet-characters
-  (alphabet-spec-fails "aabcdefg" ::sut/alphabet-distinct))
+  (alphabet-spec-fails "aabcdefg" ::spec/alphabet-distinct))
 
 (deftest too-short-of-an-alphabet
-  (alphabet-spec-fails "ab" ::sut/alphabet-min-length))
+  (alphabet-spec-fails "ab" ::spec/alphabet-min-length))

@@ -1,4 +1,5 @@
 {:files
  {:pattern #"\.(clj[csx]?|edn|cljstyle)$"}
  :rules
- {:blank-lines {:padding-lines 1}}}
+ {:blank-lines {:padding-lines 1}
+  :indentation {:indents {s/fdef [[:inner 0]]}}}}
