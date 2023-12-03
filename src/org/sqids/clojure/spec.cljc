@@ -4,7 +4,8 @@
     [clojure.set :as set]
     [clojure.spec.alpha :as s]
     [clojure.spec.gen.alpha :as gen]
-    [clojure.string :as string]))
+    [clojure.string :as string]
+    [org.sqids.clojure.platform :as platform]))
 
 (defn conform!
   [spec input]
@@ -43,7 +44,7 @@
   #(>= (count %) min-alphabet-length))
 
 (s/def ::alphabet-no-multibyte
-  #(= (count %) (count (.getBytes ^String %))))
+  #(= (count %) (platform/byte-count %)))
 
 (s/def ::alphabet
   (s/with-gen
@@ -71,7 +72,7 @@
   (s/keys :opt-un [::alphabet ::min-length ::block-list]))
 
 (s/def ::instance
-  #(instance? org.sqids.Sqids %))
+  #(instance? platform/class %))
 
 (s/def ::sqids
   (s/with-gen
@@ -79,7 +80,8 @@
     #(gen/fmap sqids (s/gen ::options))))
 
 (s/def ::nat-ints
-  (s/coll-of nat-int? :kind sequential?))
+  (s/coll-of (s/int-in 0 platform/over-max-value)
+             :kind sequential?))
 
 (s/def ::ints
   (s/coll-of int? :kind vector?))
@@ -93,7 +95,7 @@
              (fn [[s nat-ints]]
                (try
                  (encode s nat-ints)
-                 (catch RuntimeException _
+                 (catch #?(:cljs js/Error :clj RuntimeException) _
                    ;; TODO: Catch a more specific exception from sqids-java once
                    ;; present.
                    nil))))

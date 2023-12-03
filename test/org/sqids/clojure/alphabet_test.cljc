@@ -3,7 +3,11 @@
     [clojure.spec.alpha :as s]
     [clojure.test :refer [deftest is]]
     [org.sqids.clojure :as sut]
-    [org.sqids.clojure.spec :as spec]))
+    [org.sqids.clojure.spec :as spec])
+  #?(:clj
+     (:import
+       (clojure.lang
+         ExceptionInfo))))
 
 (defn make
   [alphabet]
@@ -12,7 +16,7 @@
 (defn alphabet-spec-fails
   [alphabet root-spec]
   (let [e
-        (is (thrown? clojure.lang.ExceptionInfo (make alphabet)))
+        (is (thrown? ExceptionInfo (make alphabet)))
 
         {::s/keys [problems]}
         (ex-data e)]

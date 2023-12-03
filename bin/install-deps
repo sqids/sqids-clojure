@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+clojure -A"$(clojure -M bin/print_deps_aliases.clj)" -P

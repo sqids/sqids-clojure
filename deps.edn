@@ -26,14 +26,15 @@
   {:main-opts ["-m" "kaocha.runner"]}
 
   :cljstyle
-  {:replace-deps
-   {mvxcvi/cljstyle {:mvn/version "0.15.0"}}
-
-   :main-opts ["-m" "cljstyle.main"]}
+  {:replace-deps {mvxcvi/cljstyle {:mvn/version "0.15.0"}}
+   :main-opts    ["-m" "cljstyle.main"]}
 
   :clj-kondo
   {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2023.10.20"}}
    :main-opts    ["-m" "clj-kondo.main"]}
+
+  :cljs
+  {:extra-deps {thheller/shadow-cljs {:mvn/version "2.26.2"}}}
 
   :build
   {:replace-deps

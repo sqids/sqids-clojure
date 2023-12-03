@@ -18,6 +18,8 @@
 (when (thread-bound? #'s/*explain-out*)
   (set! s/*explain-out* expound/printer))
 
+(set! *warn-on-reflection* true)
+
 (defn refresh-and-test
   ([refresh-fn kaocha-fn]
    (refresh-and-test refresh-fn kaocha-fn {}))

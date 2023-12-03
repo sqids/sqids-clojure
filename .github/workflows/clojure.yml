@@ -20,10 +20,14 @@ jobs:
           sudo ./posix-install.sh
           rm posix-install.sh
       - name: Install deps
-        run: clojure -A"$(echo '(->> "./deps.edn" slurp read-string :aliases keys (apply str) print)' | clojure -M -)" -P
+        run: bin/install-deps
       - name: Install pre-commit
         run: pip3 install pre-commit
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
-      - name: Run tests
+      - name: Run Clojure tests
         run: bin/kaocha
+      - name: Build CLJS
+        run: npx shadow-cljs compile test
+      - name: Run JS tests
+        run: node target/test.js

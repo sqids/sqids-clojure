@@ -11,7 +11,9 @@ repos:
     rev: v2023.10.20
     hooks:
       - id: clj-kondo
-        entry: bin/clj-kondo --lint
+        entry: bin/clj-kondo --lint src
+        pass_filenames: false
+        require_serial: true
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

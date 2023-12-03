@@ -61,7 +61,8 @@
                        [1 2 3 4 5 6 7 8 9 10]
                        [100 200 300]
                        [1000 2000 30000]
-                       [(long Integer/MAX_VALUE)]]]
+                       [(long #?(:clj Integer/MAX_VALUE
+                                 :cljs js/Number.MAX_SAFE_INTEGER))]]]
         (let [id (sut/encode sqids numbers)]
           (is (<= min-length (count id)))
           (is (= numbers (sut/decode sqids id))))))))
