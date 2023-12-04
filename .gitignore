@@ -32,6 +32,7 @@
 /classes
 /src/gen
 /target
+Brewfile.lock.json
 cljs-test-runner-out/
 node_modules/
 pom.xml

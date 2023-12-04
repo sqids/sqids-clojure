@@ -1,18 +1,4 @@
 repos:
-  - repo: local
-    hooks:
-      - id: cljstyle
-        name: cljstyle
-        entry: bin/_cljstyle fix
-        language: system
-        types: [file]
-        files: \.(clj[csx]?|edn)$
-      - id: prettier
-        name: prettier
-        language: docker_image
-        entry: tmknom/prettier
-        types: [text]
-        args: [--write, --list-different, --ignore-unknown]
   - repo: https://github.com/clj-kondo/clj-kondo
     rev: v2023.10.20
     hooks:
@@ -35,3 +21,22 @@ repos:
     rev: v0.9.0
     hooks:
       - id: shellcheck
+  - repo: local
+    hooks:
+      - id: cljstyle
+        name: cljstyle
+        entry: bin/_cljstyle fix
+        language: system
+        types: [file]
+        files: \.(clj[csx]?|edn)$
+      - id: prettier
+        name: prettier
+        language: docker_image
+        entry: tmknom/prettier
+        types: [text]
+        args: [--write, --list-different, --ignore-unknown]
+      - id: git-diff
+        name: git-diff
+        language: system
+        entry: git --no-pager diff --color --exit-code
+        always_run: true
