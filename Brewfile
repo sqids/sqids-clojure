@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-cask 'cljstyle'
+if File.exist?('/tmp/brew-bundle-github-actions')
+  brew 'clojure', args: ['ignore-dependencies']
+else
+  brew 'clojure'
 
-tap 'borkdude/brew'
-brew 'borkdude/brew/clj-kondo'
+  tap 'borkdude/brew'
+  brew 'borkdude/brew/clj-kondo'
 
-brew 'clojure'
-
-brew 'node'
+  cask 'cljstyle'
+end
 
 brew 'pre-commit'

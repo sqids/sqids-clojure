@@ -36,7 +36,7 @@ jobs:
         id: homebrew-cache
         with:
           path: /home/linuxbrew/.linuxbrew
-          key: ${{ runner.os }}-homebrew-${{ steps.formulae-hash.outputs.result }}
+          key: ${{ runner.os }}-homebrew-${{ hashFiles('Brewfile') }}-${{ steps.formulae-hash.outputs.result }}
       - uses: actions/cache@v3
         name: pre-commit cache
         id: pre-commit-cache
@@ -44,7 +44,9 @@ jobs:
           path: /home/runner/.cache/pre-commit
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Install dependencies
-        run: bin/install-deps
+        run: |
+          touch /tmp/brew-bundle-github-actions
+          bin/install-deps
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
       - name: Run clj tests
