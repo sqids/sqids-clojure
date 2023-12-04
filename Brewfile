@@ -2,6 +2,7 @@
 
 cask 'cljstyle'
 
+tap 'borkdude/brew'
 brew 'borkdude/brew/clj-kondo'
 
 brew 'clojure'

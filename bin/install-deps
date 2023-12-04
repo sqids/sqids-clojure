@@ -6,10 +6,6 @@ if command -v brew >/dev/null; then
   brew bundle
 fi
 
-if ! command -v pre-commit >/dev/null; then
-  pip3 install pre-commit
-fi
-
 clojure -A"$(clojure -M bin/print_deps_aliases.clj)" -P
 
 npm install

@@ -12,13 +12,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Install Clojure
-        working-directory: /tmp
+      - uses: actions/cache@v3
+        with:
+          path: |
+            /home/runner/.m2
+            /home/linuxbrew/.linuxbrew
+            /home/runner/.cache/pre-commit
+          key: ${{ runner.os }}-sqids-clojure
+      - name: Add Homebrew to path
+        run: echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
+      - name: Install Homebrew
         run: |
-          curl -L -O https://github.com/clojure/brew-install/releases/latest/download/posix-install.sh
-          chmod +x posix-install.sh
-          sudo ./posix-install.sh
-          rm posix-install.sh
+          if ! command -v brew >/dev/null; then
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          fi
       - name: Install dependencies
         run: bin/install-deps
       - name: Run pre-commit hooks
