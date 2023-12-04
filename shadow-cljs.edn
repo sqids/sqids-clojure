@@ -1,2 +1,2 @@
-{:deps   true
+{:deps   {:aliases [:cljs]}
  :builds {}}

@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: cljstyle
         name: cljstyle
-        entry: bin/cljstyle fix
+        entry: bin/_cljstyle fix
         language: system
         types: [file]
         files: \.(clj[csx]?|edn)$

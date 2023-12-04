@@ -6,5 +6,4 @@ clojure -A"$(clojure -M bin/print_deps_aliases.clj)" -P
 
 pip3 install pre-commit
 
-npm install --global shadow-cljs
 npm install
