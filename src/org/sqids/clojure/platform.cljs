@@ -7,13 +7,13 @@
 (def default-alphabet
   (js->clj sqids/defaultOptions.alphabet))
 
-(def ^:const default-min-length
+(def default-min-length
   sqids/defaultOptions.minLength)
 
 (def default-block-list
   (js->clj sqids/defaultOptions.blocklist))
 
-(def ^:const class
+(def class
   Sqids)
 
 (defn sqids
@@ -34,10 +34,10 @@
   [s]
   (.-size (js/Blob. [s])))
 
-(def ^:const max-value
+(def max-value
   js/Number.MAX_SAFE_INTEGER)
 
-(def ^:const max-value+1
+(def max-value+1
   (inc max-value))
 
 (s/def ::ints-elem

@@ -7,16 +7,16 @@
       Sqids
       Sqids$Builder)))
 
-(def ^:const default-alphabet
+(def default-alphabet
   Sqids$Builder/DEFAULT_ALPHABET)
 
-(def ^:const default-min-length
+(def default-min-length
   Sqids$Builder/DEFAULT_MIN_LENGTH)
 
-(def ^:const default-block-list
+(def default-block-list
   Sqids$Builder/DEFAULT_BLOCK_LIST)
 
-(def ^:const class
+(def class
   Sqids)
 
 (defn sqids
@@ -42,10 +42,10 @@
 (def ints-predicate
   int?)
 
-(def ^:const max-value
+(def max-value
   Long/MAX_VALUE)
 
-(def ^:const max-value+1
+(def max-value+1
   (inc' max-value))
 
 (s/def ::ints-elem
