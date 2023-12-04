@@ -1,6 +1,6 @@
 (ns org.sqids.clojure.block-list-test
   (:require
-    [clojure.test :refer [deftest is]]
+    [clojure.test :as t :refer [deftest is]]
     [org.sqids.clojure :as sut]))
 
 (defn make
@@ -67,4 +67,5 @@
   (let [sqids (sut/sqids {:alphabet "abc"
                           :min-length 3
                           :block-list #{"cab" "abc" "bca"}})]
-    (is (thrown? RuntimeException (sut/encode sqids [0])))))
+    (is (thrown? #?(:cljs js/Error :clj RuntimeException)
+          (sut/encode sqids [0])))))

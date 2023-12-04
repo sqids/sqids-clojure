@@ -1,12 +1,13 @@
 (ns org.sqids.clojure
   (:require
+    [org.sqids.clojure.platform :as platform]
     [org.sqids.clojure.spec :as spec]))
 
 (def default-options
   (spec/conform! ::spec/options
-                 {:alphabet   org.sqids.Sqids$Builder/DEFAULT_ALPHABET
-                  :min-length org.sqids.Sqids$Builder/DEFAULT_MIN_LENGTH
-                  :block-list (set org.sqids.Sqids$Builder/DEFAULT_BLOCK_LIST)}))
+                 {:alphabet   platform/default-alphabet
+                  :min-length platform/default-min-length
+                  :block-list (set platform/default-block-list)}))
 
 (defn sqids
   "Builds a sqids map. Supported options in `options`:
@@ -19,17 +20,13 @@
   ([]
    (sqids {}))
   ([options]
-   (let [{:keys [alphabet min-length block-list] :as complete-options}
+   (let [complete-options
          (->> options
               (spec/conform! ::spec/options)
               (merge default-options))
 
          instance
-         (.. (org.sqids.Sqids/builder)
-             (alphabet alphabet)
-             (minLength min-length)
-             (blockList block-list)
-             build)]
+         (platform/sqids complete-options)]
 
      (->> instance
           (assoc complete-options :instance)
@@ -37,26 +34,28 @@
 
 ;; NOTE: Generative testing is disabled for encode because it may throw a
 ;; RuntimeException.
-(defn ^:no-gen encode
+(defn encode
   "Encodes numbers into a Sqid string. Arguments:
 
   | name       | description                                                                   |
   |------------|-------------------------------------------------------------------------------|
   | `s`        | A map returned by `org.sqids.clojure/sqids`.                                  |
-  | `nat-ints` | A sequential collection of natural integers that will be encoded into a Sqid. |
+  | `nat-ints` | A sequential collection of natural ints that will be encoded into a Sqid.     |
 
   Returns an empty string if `nat-ints` is empty. Throws a `RuntimeException` if
   any value in `nat-ints` is negative. May throw a `RuntimeException` if a Sqid
   cannot be generated due to too many attempts."
   [s nat-ints]
-  (let [^org.sqids.Sqids instance
+  (let [instance
         (spec/conform! ::spec/instance (:instance s))
 
         numbers
-        (mapv long (spec/conform! ::spec/nat-ints nat-ints))
+        (->> nat-ints
+             (spec/conform! ::spec/nat-ints)
+             (mapv long))
 
         result
-        (.encode instance numbers)]
+        (platform/encode instance numbers)]
 
     (spec/conform! ::spec/sqid result)))
 
@@ -72,13 +71,13 @@
   results may be negative due to long overflow; these results should be
   considered invalid."
   [s sqid]
-  (let [^org.sqids.Sqids instance
+  (let [instance
         (spec/conform! ::spec/instance (:instance s))
 
         id
         (spec/conform! ::spec/sqid sqid)
 
         numbers
-        (vec (.decode instance id))]
+        (vec (platform/decode instance id))]
 
     (spec/conform! ::spec/ints numbers)))

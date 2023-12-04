@@ -11,7 +11,9 @@
 (defn test
   "Run all the tests."
   [opts]
-  (let [{:keys [exit]} (b/process {:command-args ["bin/kaocha"]})]
+  (let [basis          (b/create-basis {:aliases [:test]})
+        cmds           (b/java-command {:basis basis})
+        {:keys [exit]} (b/process cmds)]
     (when-not (zero? exit)
       (throw (ex-info "Tests failed" {}))))
   opts)
@@ -38,7 +40,7 @@
   (assoc opts
          :lib lib   :version version
          :jar-file  (format "target/%s-%s.jar" lib version)
-         :basis     (b/create-basis {})
+         :basis     (b/create-basis {:aliases [:clj]})
          :class-dir class-dir
          :target    "target"
          :src-dirs  ["src"]

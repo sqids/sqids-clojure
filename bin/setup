@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euxfo pipefail
+
+bin/install-deps
+
+pre-commit install

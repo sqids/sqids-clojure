@@ -1,9 +1,14 @@
 (ns org.sqids.clojure.encoding-test
   (:require
     [clojure.spec.alpha :as s]
-    [clojure.test :refer [deftest is]]
+    [clojure.test :as t :refer [deftest is]]
     [org.sqids.clojure :as sut]
-    [org.sqids.clojure.spec :as spec]))
+    [org.sqids.clojure.platform :as platform]
+    [org.sqids.clojure.spec :as spec])
+  #?(:clj
+     (:import
+       (clojure.lang
+         ExceptionInfo))))
 
 (def sqids
   (sut/sqids))
@@ -15,7 +20,7 @@
     (is (= numbers (sut/decode sqids id)))))
 
 (deftest different-inputs-test
-  (let [numbers [0 0 0 1 2 3 100 1000 100000 1000000 Long/MAX_VALUE]]
+  (let [numbers [0 0 0 1 2 3 100 1000 100000 1000000 platform/max-value]]
     (is (= numbers (->> numbers
                         (sut/encode sqids)
                         (sut/decode sqids))))))
@@ -51,7 +56,7 @@
 (defn nat-ints-spec-fails
   [number]
   (let [e
-        (is (thrown? clojure.lang.ExceptionInfo (sut/encode sqids [number])))
+        (is (thrown? ExceptionInfo (sut/encode sqids [number])))
 
         {::s/keys [problems]}
         (ex-data e)]
@@ -63,4 +68,4 @@
 
 (deftest encode-out-of-range-numbers-test
   (nat-ints-spec-fails -1)
-  (nat-ints-spec-fails (+' Long/MAX_VALUE 1)))
+  (nat-ints-spec-fails platform/max-value+1))
