@@ -12,20 +12,37 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+        name: Check out repository
+      - uses: actions/setup-node@v4
+        name: Set up Node
         with:
-          path: |
-            /home/runner/.m2
-            /home/linuxbrew/.linuxbrew
-            /home/runner/.cache/pre-commit
-          key: ${{ runner.os }}-sqids-clojure
+          node-version-file: .node-version
+      - uses: actions/setup-java@v4
+        name: Set up Java
+        with:
+          distribution: temurin
+          java-version-file: .java-version
+          cache: maven
+          cache-dependency-path: deps.edn
       - name: Add Homebrew to path
         run: echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
       - name: Install Homebrew
-        run: |
-          if ! command -v brew >/dev/null; then
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          fi
+        run: bin/ci/install-homebrew
+      - name: Calculate Homebrew formula versions hash
+        id: formulae-hash
+        run: echo "result=$(bin/ci/formulae-hash)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v3
+        name: Homebrew cache
+        id: homebrew-cache
+        with:
+          path: /home/linuxbrew/.linuxbrew
+          key: ${{ runner.os }}-homebrew-${{ steps.formulae-hash.outputs.result }}
+      - uses: actions/cache@v3
+        name: pre-commit cache
+        id: pre-commit-cache
+        with:
+          path: /home/runner/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Install dependencies
         run: bin/install-deps
       - name: Run pre-commit hooks

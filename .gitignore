@@ -13,7 +13,6 @@
 .hg/
 .hgignore
 .idea
-.java-version
 .lein-*
 .lsp/.cache
 .lsp/sqlite.db
