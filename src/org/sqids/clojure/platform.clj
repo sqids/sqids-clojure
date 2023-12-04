@@ -39,9 +39,6 @@
   [^String s]
   (count (.getBytes s)))
 
-(def ints-predicate
-  int?)
-
 (def max-value
   Long/MAX_VALUE)
 
