@@ -5,11 +5,11 @@ set -euxfo pipefail
 type="${1:-clj}"
 
 case "$type" in
-    clj | cljs)
-        clojure -M":dev:$type:$type/test" "$@"
-        ;;
-    *)
-        : "Usage: bin/run-tests [clj|cljs]"
-        exit 1
-        ;;
+clj | cljs)
+  clojure -M":dev:$type:$type/test" "$@"
+  ;;
+*)
+  : "Usage: bin/run-tests [clj|cljs]"
+  exit 1
+  ;;
 esac

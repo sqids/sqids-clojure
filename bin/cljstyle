@@ -2,4 +2,16 @@
 
 set -euxfo pipefail
 
-clojure -M:cljstyle "$@"
+if [ -n "${IN_BIN_CLJSTYLE+1}" ]; then
+  : "Detected recursive call to bin/cljstyle, exiting"
+  exit 1
+fi
+
+export IN_BIN_CLJSTYLE
+IN_BIN_CLJSTYLE=1
+
+if command -v cljstyle >/dev/null; then
+  cljstyle "$@"
+else
+  clojure -M:cljstyle "$@"
+fi
