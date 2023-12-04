@@ -3,3 +3,5 @@
 set -euxfo pipefail
 
 clojure -A"$(clojure -M bin/print_deps_aliases.clj)" -P
+
+npm install
