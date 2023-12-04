@@ -1,7 +1,7 @@
 (ns org.sqids.clojure.encoding-test
   (:require
     [clojure.spec.alpha :as s]
-    [clojure.test :refer [deftest is]]
+    [clojure.test :as t :refer [deftest is]]
     [org.sqids.clojure :as sut]
     [org.sqids.clojure.platform :as platform]
     [org.sqids.clojure.spec :as spec])
@@ -68,4 +68,4 @@
 
 (deftest encode-out-of-range-numbers-test
   (nat-ints-spec-fails -1)
-  (nat-ints-spec-fails platform/over-max-value))
+  (nat-ints-spec-fails platform/max-value+1))

@@ -1,5 +1,7 @@
 (ns org.sqids.clojure.platform
   (:refer-clojure :exclude [class])
+  (:require
+    [clojure.spec.alpha :as s])
   (:import
     (org.sqids
       Sqids
@@ -37,8 +39,14 @@
   [^String s]
   (count (.getBytes s)))
 
+(def ints-predicate
+  int?)
+
 (def ^:const max-value
   Long/MAX_VALUE)
 
-(def ^:const over-max-value
+(def ^:const max-value+1
   (inc' max-value))
+
+(s/def ::ints-elem
+  int?)

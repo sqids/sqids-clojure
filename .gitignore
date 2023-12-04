@@ -1,5 +1,4 @@
-*.class
-*.iml
+*.class *.iml
 *.jar
 *.log
 *.swp
@@ -33,7 +32,10 @@
 /classes
 /src/gen
 /target
+cljs-test-runner-out/
 node_modules/
+package-lock.json
+package.json
 pom.xml
 pom.xml.asc
 public/js

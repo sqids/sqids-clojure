@@ -3,4 +3,5 @@
             read-string
             :aliases
             keys
+            sort
             (apply str)))

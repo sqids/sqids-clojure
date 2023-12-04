@@ -34,13 +34,13 @@
 
 ;; NOTE: Generative testing is disabled for encode because it may throw a
 ;; RuntimeException.
-(defn ^:no-gen encode
+(defn encode
   "Encodes numbers into a Sqid string. Arguments:
 
   | name       | description                                                                   |
   |------------|-------------------------------------------------------------------------------|
   | `s`        | A map returned by `org.sqids.clojure/sqids`.                                  |
-  | `nat-ints` | A sequential collection of natural integers that will be encoded into a Sqid. |
+  | `nat-ints` | A sequential collection of natural ints that will be encoded into a Sqid.     |
 
   Returns an empty string if `nat-ints` is empty. Throws a `RuntimeException` if
   any value in `nat-ints` is negative. May throw a `RuntimeException` if a Sqid

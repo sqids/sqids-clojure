@@ -80,11 +80,11 @@
     #(gen/fmap sqids (s/gen ::options))))
 
 (s/def ::nat-ints
-  (s/coll-of (s/int-in 0 platform/over-max-value)
+  (s/coll-of (s/int-in 0 platform/max-value+1)
              :kind sequential?))
 
 (s/def ::ints
-  (s/coll-of int? :kind vector?))
+  (s/coll-of ::platform/ints-elem :kind vector?))
 
 (s/def ::sqid
   (s/with-gen
@@ -95,7 +95,7 @@
              (fn [[s nat-ints]]
                (try
                  (encode s nat-ints)
-                 (catch #?(:cljs js/Error :clj RuntimeException) _
+                 (catch #?(:cljs :default :clj RuntimeException) _
                    ;; TODO: Catch a more specific exception from sqids-java once
                    ;; present.
                    nil))))
@@ -119,8 +119,8 @@
   :ret  ::ints
   :fn   (fn [info]
           (let [{:keys [ret args]} info]
-            (if (some neg? ret)
-              true
+            (or
+              (not (s/valid? ::nat-ints ret))
               (let [{:keys [s sqid]}
                     args
 

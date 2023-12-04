@@ -1,6 +1,6 @@
 (ns org.sqids.clojure.block-list-test
   (:require
-    [clojure.test :refer [deftest is]]
+    [clojure.test :as t :refer [deftest is]]
     [org.sqids.clojure :as sut]))
 
 (defn make

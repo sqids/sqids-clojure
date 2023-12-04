@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
+set -euxfo pipefail
+
 clojure -M:clj-kondo "$@"

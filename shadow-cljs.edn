@@ -1,3 +1,2 @@
-{:deps   {:aliases [:cljs]}
- :builds {:test {:target :node-test
-                 :output-to "target/test.js"}}}
+{:deps   true
+ :builds {}}

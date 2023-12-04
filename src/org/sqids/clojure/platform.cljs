@@ -1,7 +1,8 @@
 (ns org.sqids.clojure.platform
   (:require
     ["sqids" :as sqids]
-    ["sqids$default" :as Sqids]))
+    ["sqids$default" :as Sqids]
+    [clojure.spec.alpha :as s]))
 
 (def default-alphabet
   (js->clj sqids/defaultOptions.alphabet))
@@ -36,5 +37,8 @@
 (def ^:const max-value
   js/Number.MAX_SAFE_INTEGER)
 
-(def ^:const over-max-value
+(def ^:const max-value+1
   (inc max-value))
+
+(s/def ::ints-elem
+  (s/and number? #(= % (long %))))

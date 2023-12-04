@@ -1,7 +1,7 @@
 (ns org.sqids.clojure.alphabet-test
   (:require
     [clojure.spec.alpha :as s]
-    [clojure.test :refer [deftest is]]
+    [clojure.test :as t :refer [deftest is]]
     [org.sqids.clojure :as sut]
     [org.sqids.clojure.spec :as spec])
   #?(:clj

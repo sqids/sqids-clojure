@@ -6,24 +6,38 @@
  ["src"]
 
  :deps
- {borkdude/dynaload   {:mvn/version "0.3.5"}
-  org.clojure/clojure {:mvn/version "1.11.1"}
-  org.sqids/sqids     {:mvn/version "0.1.0-SNAPSHOT"}}
+ {borkdude/dynaload {:mvn/version "0.3.5"}}
 
  :aliases
- {:dev
+ {:clj
   {:extra-deps
-   {expound/expound             {:mvn/version "0.9.0"}
-    lambdaisland/kaocha         {:mvn/version "1.87.1366"}
-    orchestra/orchestra         {:mvn/version "2021.01.01-1"}
-    org.clojure/test.check      {:mvn/version "1.1.1"}
-    org.clojure/tools.namespace {:mvn/version "1.4.4"}}
+   {org.clojure/clojure {:mvn/version "1.11.1"}
+    org.sqids/sqids     {:mvn/version "0.1.0-SNAPSHOT"}}}
 
-   :extra-paths
-   ["test" "dev"]}
+  :cljs
+  {:extra-deps
+   {thheller/shadow-cljs {:mvn/version "2.26.2"}}}
 
-  :test
-  {:main-opts ["-m" "kaocha.runner"]}
+  :dev
+  {:extra-paths
+   ["dev" "test"]
+
+   :extra-deps
+   {expound/expound                      {:mvn/version "0.9.0"}
+    io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}
+    olical/cljs-test-runner              {:mvn/version "3.8.0"}
+    org.clojure/test.check               {:mvn/version "1.1.1"}
+    org.clojure/tools.namespace          {:mvn/version "1.4.4"}
+    orchestra/orchestra                  {:mvn/version "2021.01.01-1"}}}
+
+  :clj/test
+  {:main-opts ["-m" "cognitect.test-runner"]}
+
+  :cljs/test
+  {:main-opts ["-m" "cljs-test-runner.main"]}
+
+  :cljs/cli
+  {:main-opts ["-m" "shadow.cljs.devtools.cli"]}
 
   :cljstyle
   {:replace-deps {mvxcvi/cljstyle {:mvn/version "0.15.0"}}
@@ -33,13 +47,14 @@
   {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2023.10.20"}}
    :main-opts    ["-m" "clj-kondo.main"]}
 
-  :cljs
-  {:extra-deps {thheller/shadow-cljs {:mvn/version "2.26.2"}}}
-
   :build
   {:replace-deps
    {io.github.clojure/tools.build {:mvn/version "0.9.6"}
     slipset/deps-deploy           {:mvn/version "0.2.0"}}
 
    :ns-default
-   build}}}
+   build}
+
+  :nrepl
+  {:extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}}
+   :main-opts  ["-m" "nrepl.cmdline" "--interactive" "--color"]}}}
