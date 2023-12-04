@@ -2,7 +2,6 @@
 
 set -euxfo pipefail
 
-pip3 install pre-commit
-pre-commit install
-npm i -g shadow-cljs
 bin/install-deps
+
+pre-commit install

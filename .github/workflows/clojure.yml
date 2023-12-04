@@ -19,8 +19,8 @@ jobs:
           chmod +x posix-install.sh
           sudo ./posix-install.sh
           rm posix-install.sh
-      - name: Set up enviroment
-        run: bin/setup
+      - name: Install dependencies
+        run: bin/install-deps
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
       - name: Run clj tests
