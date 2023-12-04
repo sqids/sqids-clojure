@@ -19,8 +19,10 @@ jobs:
           chmod +x posix-install.sh
           sudo ./posix-install.sh
           rm posix-install.sh
-      - name: Install deps
+      - name: Install Clojure deps
         run: bin/install-deps
+      - name: npm install
+        run: npm install
       - name: Install pre-commit
         run: pip3 install pre-commit
       - name: Run pre-commit hooks
