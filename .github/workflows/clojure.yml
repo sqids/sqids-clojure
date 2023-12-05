@@ -34,16 +34,19 @@ jobs:
         run: echo "result=$(bin/ci/formulae-hash)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v3
         name: Homebrew cache
-        id: homebrew-cache
         with:
           path: /home/linuxbrew/.linuxbrew
           key: ${{ runner.os }}-homebrew-${{ hashFiles('Brewfile') }}-${{ steps.formulae-hash.outputs.result }}
       - uses: actions/cache@v3
         name: pre-commit cache
-        id: pre-commit-cache
         with:
           path: /home/runner/.cache/pre-commit
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - uses: actions/cache@v3
+        name: .gitlibs cache
+        with:
+          path: /home/runner/.gitlibs
+          key: ${{ runner.os }}-gitlibs-${{ hashFiles('deps.edn') }}
       - name: Install dependencies
         run: |
           touch /tmp/brew-bundle-github-actions
