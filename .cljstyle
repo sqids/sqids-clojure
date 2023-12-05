@@ -1,5 +1,6 @@
 {:files
- {:pattern #"\.(clj[csx]?|edn|cljstyle)$"}
+ {:pattern #"\.(clj[cs]?|edn|cljstyle)$"
+  :ignore #{".git" "target" "node_modules" #"\.clj-kondo/(?!config\.edn).*"}}
  :rules
  {:blank-lines {:padding-lines 1}
   :indentation {:indents {s/fdef [[:inner 0]]}}}}

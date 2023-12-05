@@ -16,44 +16,49 @@ jobs:
       - uses: actions/setup-node@v4
         name: Set up Node
         with:
-          node-version-file: .node-version
+          node-version: lts/*
           cache: npm
       - uses: actions/setup-java@v4
         name: Set up Java
         with:
           distribution: temurin
-          java-version-file: .java-version
-          cache: maven
-          cache-dependency-path: deps.edn
-      - name: Add Homebrew to path
-        run: echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
-      - name: Install Homebrew
-        run: bin/ci/install-homebrew
-      - name: Calculate Homebrew formula versions hash
-        id: formulae-hash
-        run: echo "result=$(bin/ci/formulae-hash)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v3
-        name: Homebrew cache
+          java-version: 11
+      - uses: actions/setup-python@v4
+        name: Set up Python
         with:
-          path: /home/linuxbrew/.linuxbrew
-          key: ${{ runner.os }}-homebrew-${{ hashFiles('Brewfile') }}-${{ steps.formulae-hash.outputs.result }}
+          python-version: 3.12
+          cache: pip
       - uses: actions/cache@v3
         name: pre-commit cache
         with:
-          path: /home/runner/.cache/pre-commit
+          path: ~/.cache/pre-commit
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-      - uses: actions/cache@v3
-        name: .gitlibs cache
+      - name: Docker cache
+        uses: ScribeMD/docker-cache@0.3.6
         with:
-          path: /home/runner/.gitlibs
-          key: ${{ runner.os }}-gitlibs-${{ hashFiles('deps.edn') }}
-      - name: Install dependencies
+          key: ${{ runner.os }}-docker-${{ hashFiles('.pre-commit-config.yaml') }}
+      - uses: actions/cache@v3
+        name: Clojure cache
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.clojure
+            ~/.cpcache
+          key: ${{ runner.os }}-clojure-${{ hashFiles('deps.edn') }}
+      - name: Install Clojure
         run: |
-          touch /tmp/brew-bundle-github-actions
-          bin/install-deps
+          curl -L -O https://github.com/clojure/brew-install/releases/latest/download/posix-install.sh
+          chmod +x posix-install.sh
+          sudo ./posix-install.sh
+          rm posix-install.sh
       - name: Run pre-commit hooks
-        run: pre-commit run --all-files
+        run: |
+          pip install -r requirements.txt
+          pre-commit run --all-files
       - name: Run clj tests
-        run: bin/run-tests clj
+        run: bin/test clj
       - name: Run cljs tests
-        run: bin/run-tests cljs
+        run: |
+          npm install
+          bin/test cljs

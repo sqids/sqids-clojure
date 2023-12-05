@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euxfo pipefail
+
+case "${1:-}" in
+clj)
+  clojure -M:dev:clj:test
+  ;;
+cljs)
+  npx shadow-cljs -A:dev compile test
+  node target/cljs-tests.js
+  ;;
+*)
+  : "Usage: bin/run-tests clj|cljs"
+  exit 1
+  ;;
+esac

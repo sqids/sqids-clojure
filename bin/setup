@@ -2,6 +2,5 @@
 
 set -euxfo pipefail
 
-bin/install-deps
-
-pre-commit install
+brew bundle
+npm install
