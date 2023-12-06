@@ -29,7 +29,6 @@ repos:
         entry: bin/_cljstyle fix
         language: system
         types: [file]
-        files: \.(clj[csx]?|edn)$
       - id: prettier
         name: prettier
         language: docker_image
