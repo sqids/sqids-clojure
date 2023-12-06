@@ -5,29 +5,28 @@ YouTube-looking IDs from numbers. It's good for link shortening, fast &
 URL-safe ID generation and decoding back into numbers for quicker database
 lookups.
 
-`sqids-clojure` wraps [`sqids-java`](https://github.com/sqids/sqids-java),
-delegating most of the implementation to `sqids-java`. `sqid-clojure`'s version
-follows `sqids-java`'s major and minor versions.
+`sqids-clojure` supports both Clojure and ClojureScript! In a Clojure environment, `sqids-clojure` wraps [`sqids-java`](https://github.com/sqids/sqids-java). In a ClojureScript environment, `sqids-clojure` wraps [`sqids-javascript`](https://github.com/sqids/sqids-java).
 
-If you notice an issue with decoding and encoding, please refer to `sqids-java`
-for possible issues.
+If you notice any issues with decoding or encoding, these are likely an issue
+the upstream wrapped Sqids library.
 
 ## Getting started
 
-`sqids-clojure` is currently **unreleased**. The following dependency
-information is an example, but will be updated in the future upon release.
+`sqids-clojure` will have its first stable release after `sqids-java` has its
+first stable release. Until then, you can use the pre-release snapshot.
 
 [CLI/`deps.edn`](https://clojure.org/reference/deps_and_cli) dependency
 information:
 
 ```clojure
-org.sqids/sqids-clojure {:mvn/version "0.1.0-SNAPSHOT"}
+;; maven
+org.sqids/sqids-clojure {:mvn/version "0.0.9999-SNAPSHOT"}
 ```
 
-[Leiningen](https://leiningen.org/) stable dependency information:
+[Leiningen](https://leiningen.org/) dependency information:
 
 ```clojure
-[org.sqids/sqids-clojure "0.1.0-SNAPSHOT"]
+[org.sqids/sqids-clojure "0.0.9999-SNAPSHOT"]
 ```
 
 After installation, require `sqids-clojure`:

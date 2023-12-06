@@ -23,21 +23,15 @@
    ["dev" "test"]
 
    :extra-deps
-   {expound/expound                      {:mvn/version "0.9.0"}
-    io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}
-    olical/cljs-test-runner              {:mvn/version "3.8.0"}
-    org.clojure/test.check               {:mvn/version "1.1.1"}
-    org.clojure/tools.namespace          {:mvn/version "1.4.4"}
-    orchestra/orchestra                  {:mvn/version "2021.01.01-1"}}}
+   {expound/expound             {:mvn/version "0.9.0"}
+    org.clojure/test.check      {:mvn/version "1.1.1"}
+    org.clojure/tools.namespace {:mvn/version "1.4.4"}
+    orchestra/orchestra         {:mvn/version "2021.01.01-1"}}}
 
-  :clj/test
-  {:main-opts ["-m" "cognitect.test-runner"]}
-
-  :cljs/test
-  {:main-opts ["-m" "cljs-test-runner.main"]}
-
-  :cljs/cli
-  {:main-opts ["-m" "shadow.cljs.devtools.cli"]}
+  :test
+  {:extra-deps
+   {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+   :main-opts ["-m" "cognitect.test-runner"]}
 
   :cljstyle
   {:replace-deps {mvxcvi/cljstyle {:mvn/version "0.15.0"}}

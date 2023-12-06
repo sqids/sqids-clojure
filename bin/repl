@@ -2,17 +2,15 @@
 
 set -euxfo pipefail
 
-type="${1:-clj}"
-
-case "$type" in
+case "${1:-}" in
 clj)
   clj -M:dev:clj:nrepl
   ;;
 cljs)
-  clj -M:dev:cljs:cljs/cli node-repl
+  npx shadow-cljs -A:dev node-repl
   ;;
 *)
-  : "Usage: bin/repl [clj|cljs]" >&2
+  : "Usage: bin/repl clj|cljs" >&2
   exit 1
   ;;
 esac

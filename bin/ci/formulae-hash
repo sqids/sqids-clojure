@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euxfo pipefail
-
-brew list --versions | sha256sum | awk '{print $1}'

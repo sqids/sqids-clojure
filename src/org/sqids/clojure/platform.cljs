@@ -5,7 +5,7 @@
     [clojure.spec.alpha :as s]))
 
 (def default-alphabet
-  (js->clj sqids/defaultOptions.alphabet))
+  sqids/defaultOptions.alphabet)
 
 (def default-min-length
   sqids/defaultOptions.minLength)
