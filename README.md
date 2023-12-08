@@ -1,5 +1,7 @@
 # [`sqids-clojure`](https://sqids.org/clojure)
 
+[![sqids-clojure on Clojars](https://img.shields.io/clojars/v/org.sqids/sqids-clojure.svg)](https://clojars.org/org.sqids/sqids-clojure) [![workflow status](https://github.com/sqids/sqids-clojure/actions/workflows/clojure.yml/badge.svg)](https://github.com/sqids/sqids-clojure/actions/workflows/clojure.yml)
+
 Sqids (pronounced "squids") is a small library that lets you generate
 YouTube-looking IDs from numbers. It's good for link shortening, fast &
 URL-safe ID generation and decoding back into numbers for quicker database
@@ -16,21 +18,18 @@ the upstream wrapped Sqids library.
 
 ## Getting started
 
-`sqids-clojure` will have its first stable release after `sqids-java` has its
-first stable release. Until then, you can use the pre-release snapshot.
-
 [CLI/`deps.edn`](https://clojure.org/reference/deps_and_cli) dependency
 information:
 
 ```clojure
 ;; maven
-org.sqids/sqids-clojure {:mvn/version "0.0.9999-SNAPSHOT"}
+org.sqids/sqids-clojure {:mvn/version "1.0.15"}
 ```
 
 [Leiningen](https://leiningen.org/) dependency information:
 
 ```clojure
-[org.sqids/sqids-clojure "0.0.9999-SNAPSHOT"]
+[org.sqids/sqids-clojure "1.0.15"]
 ```
 
 After installation, require `sqids-clojure`:

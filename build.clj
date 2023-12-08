@@ -8,7 +8,7 @@
 (def lib 'org.sqids/sqids-clojure)
 
 (def versions
-  (let [major   0
+  (let [major   1
         minor   0
         commits {:release  (b/git-count-revs nil)
                  :snapshot "9999-SNAPSHOT"}]
