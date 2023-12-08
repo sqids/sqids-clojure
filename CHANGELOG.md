@@ -1,5 +1,5 @@
 # CHANGELOG
 
-**v0.0.9999-SNAPSHOT (unreleased)**:
+**v1.0.15**:
 
 - Initial implementation
