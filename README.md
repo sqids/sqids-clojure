@@ -11,7 +11,7 @@ lookups.
 environment, `sqids-clojure` wraps
 [`sqids-java`](https://github.com/sqids/sqids-java). In a ClojureScript
 environment, `sqids-clojure` wraps
-[`sqids-javascript`](https://github.com/sqids/sqids-java).
+[`sqids-javascript`](https://github.com/sqids/sqids-javascript).
 
 If you notice any issues with decoding or encoding, these are likely an issue in
 the upstream wrapped Sqids library.
