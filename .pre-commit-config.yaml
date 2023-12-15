@@ -1,10 +1,11 @@
+exclude: ^vendor/
 repos:
   - repo: https://github.com/clj-kondo/clj-kondo
     rev: v2023.10.20
     hooks:
       - id: clj-kondo-docker
+        args: [clj-kondo, --lint, src, test]
         pass_filenames: false
-        require_serial: true
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

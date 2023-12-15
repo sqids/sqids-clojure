@@ -1,7 +1,16 @@
 (ns org.sqids.clojure.block-list-test
   (:require
     [clojure.test :as t :refer [deftest is]]
-    [org.sqids.clojure :as sut]))
+    [clojure.test.check.generators]
+    [clojure.test.check.properties]
+    [org.sqids.clojure :as sut]
+    [org.sqids.clojure.test-util :as u])
+  #?(:clj
+     (:import
+       (clojure.lang
+         ExceptionInfo))))
+
+(u/orch-instrument)
 
 (defn make
   [block-list]
@@ -64,8 +73,7 @@
     (is (= numbers (sut/decode sqids "IBSHOZ")))))
 
 (deftest max-block-list
-  (let [sqids (sut/sqids {:alphabet "abc"
+  (let [sqids (sut/sqids {:alphabet   "abc"
                           :min-length 3
                           :block-list #{"cab" "abc" "bca"}})]
-    (is (thrown? #?(:cljs js/Error :clj RuntimeException)
-          (sut/encode sqids [0])))))
+    (is (thrown? ExceptionInfo (sut/encode sqids [0])))))

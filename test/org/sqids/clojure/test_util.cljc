@@ -1,15 +1,22 @@
-(ns org.sqids.clojure.spec-test
+(ns org.sqids.clojure.test-util
   (:require
     [clojure.spec.alpha :as s]
     [clojure.spec.test.alpha :as stest]
-    [clojure.test :as t :refer [deftest]]
+    [clojure.test :as t]
     [clojure.test.check]
     [clojure.test.check.properties]
     [expound.alpha :as expound]
-    [org.sqids.clojure]
-    [org.sqids.clojure.spec]))
+    [#?(:clj orchestra.spec.test :cljs orchestra-cljs.spec.test) :as orch :include-macros true]))
 
-(defn check
+(defn orch-instrument
+  []
+  (orch/instrument))
+
+(def large-number
+  #?(:clj  (dec (bigint (.. 2N toBigInteger (pow 53))))
+     :cljs js/Number.MAX_SAFE_INTEGER))
+
+(defn report-check-results
   [results]
   (doseq [result results]
     (let [{:keys [failure] :as abbrev}
@@ -31,9 +38,3 @@
                     :message  message
                     :expected expected
                     :actual   actual}))))
-
-(deftest sqids-test
-  (check (stest/check `org.sqids.clojure/sqids)))
-
-(deftest decode-test
-  (check (stest/check `org.sqids.clojure/decode)))

@@ -16,7 +16,7 @@
 
 (def class-dir "target/classes")
 
-(defn- pom-template
+(defn ^:private pom-template
   [version]
   [[:description "Official Clojure port of Sqids. Generate short YouTube-looking IDs from numbers."]
    [:url "https://github.com/sqids/sqids-clojure"]

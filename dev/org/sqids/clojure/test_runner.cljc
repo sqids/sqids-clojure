@@ -4,8 +4,7 @@
     [org.sqids.clojure.alphabet-test]
     [org.sqids.clojure.block-list-test]
     [org.sqids.clojure.encoding-test]
-    [org.sqids.clojure.min-length-test]
-    [org.sqids.clojure.spec-test]))
+    [org.sqids.clojure.min-length-test]))
 
 (defn run-all-tests
   []

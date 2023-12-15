@@ -7,14 +7,11 @@ YouTube-looking IDs from numbers. It's good for link shortening, fast &
 URL-safe ID generation and decoding back into numbers for quicker database
 lookups.
 
-`sqids-clojure` supports both Clojure and ClojureScript! In a Clojure
-environment, `sqids-clojure` wraps
-[`sqids-java`](https://github.com/sqids/sqids-java). In a ClojureScript
-environment, `sqids-clojure` wraps
-[`sqids-javascript`](https://github.com/sqids/sqids-javascript).
-
-If you notice any issues with decoding or encoding, these are likely an issue in
-the upstream wrapped Sqids library.
+`sqids-clojure` supports both Clojure and ClojureScript! While the
+implementations are largely shared, there are some platform specific
+differences; on the JVM, `sqids-clojure` will auto-promote encoded numbers to
+BigInt when they get large; in JavaScript, the maximum encodable number is
+`Number/MAX_SAFE_INTEGER`.
 
 ## Getting started
 

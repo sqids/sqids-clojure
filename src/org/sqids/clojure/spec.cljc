@@ -1,134 +1,95 @@
 (ns org.sqids.clojure.spec
   (:require
-    [borkdude.dynaload :refer [dynaload]]
-    [clojure.set :as set]
+    [borkdude.dynaload :refer [dynaload] :include-macros true]
     [clojure.spec.alpha :as s]
     [clojure.spec.gen.alpha :as gen]
-    [clojure.string :as string]
+    [clojure.string :as str]
+    [org.sqids.clojure :as-alias sqids]
+    [org.sqids.clojure.alphabet :as-alias alphabet]
+    [org.sqids.clojure.block-list :as block-list]
+    [org.sqids.clojure.decoding :as-alias decoding]
+    [org.sqids.clojure.encoding :as-alias encoding]
+    [org.sqids.clojure.init :as-alias init]
     [org.sqids.clojure.platform :as platform]))
 
 (defn conform!
   [spec input]
   (let [conformed (s/conform spec input)]
     (when (s/invalid? conformed)
-      (throw (ex-info "Invalid input" (s/explain-data spec input))))
+      (throw (ex-info (s/explain-str spec input) (s/explain-data spec input))))
     conformed))
-
-;; TODO: Replace with constants from sqids-java once
-;; https://github.com/sqids/sqids-java/pull/7 is merged
-(def min-alphabet-length
-  3)
 
 (def min-length-limit
   255)
 
-(defn ^:private sqids
-  [& args]
-  (apply (dynaload 'org.sqids.clojure/sqids) args))
+(def min-alphabet-length
+  3)
 
-(defn ^:private decode
-  [& args]
-  (apply (dynaload 'org.sqids.clojure/decode) args))
+(def max-char-code
+  127)
 
-(defn ^:private encode
-  [& args]
-  (apply (dynaload 'org.sqids.clojure/encode) args))
-
-(s/def ::alphabet-string
-  string?)
-
-(s/def ::alphabet-distinct
-  #(apply distinct? %))
-
-(s/def ::alphabet-min-length
-  #(>= (count %) min-alphabet-length))
-
-(s/def ::alphabet-no-multibyte
-  #(= (count %) (platform/byte-count %)))
-
-(s/def ::alphabet
-  (s/with-gen
-    (s/and ::alphabet-string
-           ::alphabet-distinct
-           ::alphabet-min-length
-           ::alphabet-no-multibyte)
-    #(->> {:min-elements min-alphabet-length}
-          ;; TODO: Once https://github.com/sqids/sqids-java/pull/10 is merged,
-          ;; change to:
-          ;;
-          ;; (gen/set (gen/fmap char (gen/choose 0 127)))
-          ;;
-          ;; because regex chars are currently treated improperly
-          (gen/set (gen/char-alphanumeric))
-          (gen/fmap string/join))))
-
-(s/def ::min-length
-  (s/int-in 0 (inc min-length-limit)))
-
-(s/def ::block-list
+(s/def ::init/block-list
   (s/coll-of string? :kind set?))
 
-(s/def ::options
-  (s/keys :opt-un [::alphabet ::min-length ::block-list]))
+(s/def ::block-list/block-list
+  (s/and ::init/block-list
+         #(every? (fn [w] (= w (str/lower-case w))) %)
+         #(every? (fn [w] (>= (count w) block-list/min-word-length)) %)))
 
-(s/def ::instance
-  #(instance? platform/class %))
+(s/def ::alphabet/distinct
+  #(apply distinct? %))
 
-(s/def ::sqids
+(s/def ::alphabet/min-length
+  #(>= (count %) min-alphabet-length))
+
+(s/def ::alphabet/no-multibyte
+  #(every? (fn [c] (<= (platform/char-code c) max-char-code)) %))
+
+(s/def ::alphabet/alphabet
   (s/with-gen
-    (s/keys :req-un [::instance ::alphabet ::min-length ::block-list])
-    #(gen/fmap sqids (s/gen ::options))))
+    (s/and string?
+           ::alphabet/distinct
+           ::alphabet/min-length
+           ::alphabet/no-multibyte)
+    #(->> {:min-elements min-alphabet-length}
+          (gen/set (gen/fmap char (gen/choose 0 max-char-code)))
+          (gen/fmap str/join))))
 
-(s/def ::nat-ints
-  (s/coll-of (s/int-in 0 platform/max-value+1)
-             :kind sequential?))
+(s/def ::encoding/min-length
+  (s/int-in 0 (inc min-length-limit)))
 
-(s/def ::ints
-  (s/coll-of ::platform/ints-elem :kind vector?))
+(s/def ::init/options
+  (s/keys :opt-un [::alphabet/alphabet
+                   ::encoding/min-length
+                   ::init/block-list]))
 
-(s/def ::sqid
-  (s/with-gen
-    string?
-    (fn []
-      (->> (gen/tuple (s/gen ::sqids) (s/gen ::nat-ints))
-           (gen/fmap
-             (fn [[s nat-ints]]
-               (try
-                 (encode s nat-ints)
-                 (catch #?(:cljs :default :clj RuntimeException) _
-                   ;; TODO: Catch a more specific exception from sqids-java once
-                   ;; present.
-                   nil))))
-           (gen/such-that some?)))))
+(let [sqids (dynaload 'org.sqids.clojure/sqids)]
+  (s/def ::init/sqids
+    (s/with-gen
+      (s/keys :req-un [::alphabet/alphabet
+                       ::encoding/min-length
+                       ::block-list/block-list])
+      #(gen/fmap sqids (s/gen ::init/options)))))
 
-(s/fdef org.sqids.clojure/sqids
-  :args (s/alt :nullary (s/cat)
-               :unary   (s/cat :options ::options))
-  :ret ::sqids)
+(s/def ::decoding/sqid
+  string?)
 
-(s/fdef org.sqids.clojure/encode
-  :args (s/cat :s ::sqids :nat-ints ::nat-ints)
-  :ret  ::sqid
-  :fn   (fn [info]
-          (let [{:keys [ret args]}   info
-                {:keys [s nat-ints]} args]
-            (= nat-ints (decode s ret)))))
+(s/def ::decoding/number
+  ::platform/integer)
 
-(s/fdef org.sqids.clojure/decode
-  :args (s/cat :s ::sqids :sqid ::sqid)
-  :ret  ::ints
-  :fn   (fn [info]
-          (let [{:keys [ret args]} info]
-            (or
-              (not (s/valid? ::nat-ints ret))
-              (let [{:keys [s sqid]}
-                    args
+(s/def ::encoding/number
+  (s/and ::decoding/number
+         #(not (neg? %))
+         #(<= % platform/max-value)))
 
-                    expected
-                    (if (set/subset? (set sqid) (-> s :alphabet set))
-                      (->> ret
-                           (encode s)
-                           (decode s))
-                      [])]
+(s/def ::decoding/numbers
+  (s/coll-of ::decoding/number :kind vector?))
 
-                (= ret expected))))))
+(s/def ::encoding/numbers
+  (s/coll-of ::encoding/number :kind sequential?))
+
+(s/def ::decoding/args
+  (s/cat :sqids ::init/sqids :sqid ::decoding/sqid))
+
+(s/def ::encoding/args
+  (s/cat :sqids ::init/sqids :numbers ::encoding/numbers))
