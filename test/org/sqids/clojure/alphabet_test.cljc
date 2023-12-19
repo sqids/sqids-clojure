@@ -2,29 +2,17 @@
   (:require
     [clojure.spec.alpha :as s]
     [clojure.test :as t :refer [deftest is]]
+    [clojure.test.check.generators]
+    [clojure.test.check.properties]
     [org.sqids.clojure :as sut]
-    [org.sqids.clojure.spec :as spec])
-  #?(:clj
-     (:import
-       (clojure.lang
-         ExceptionInfo))))
+    [org.sqids.clojure.alphabet :as alphabet]
+    [org.sqids.clojure.test-util :as u]))
+
+(u/orch-instrument)
 
 (defn make
   [alphabet]
   (sut/sqids {:alphabet alphabet}))
-
-(defn alphabet-spec-fails
-  [alphabet root-spec]
-  (let [e
-        (is (thrown? ExceptionInfo (make alphabet)))
-
-        {::s/keys [problems]}
-        (ex-data e)]
-
-    (is (= 1 (count problems)))
-    (let [{:keys [via val]} (first problems)]
-      (is (= alphabet val))
-      (is (= root-spec (last via))))))
 
 (deftest simple-alphabet-test
   (let [sqids   (make "0123456789abcdef")
@@ -40,11 +28,26 @@
                         (sut/encode sqids)
                         (sut/decode sqids))))))
 
+(deftest wrong-type-test
+  (is (not (s/valid? ::alphabet/alphabet false))))
+
 (deftest multibyte-tests
-  (alphabet-spec-fails "ë1092" ::spec/alphabet-no-multibyte))
+  (let [alphabet "ë1092"]
+    (is (not (s/valid? ::alphabet/alphabet alphabet)))
+    (is (not (s/valid? ::alphabet/no-multibyte alphabet)))
+    (is (s/valid? ::alphabet/distinct alphabet))
+    (is (s/valid? ::alphabet/min-length alphabet))))
 
 (deftest repeating-alphabet-characters
-  (alphabet-spec-fails "aabcdefg" ::spec/alphabet-distinct))
+  (let [alphabet "aabcdefg"]
+    (is (not (s/valid? ::alphabet/alphabet alphabet)))
+    (is (s/valid? ::alphabet/no-multibyte alphabet))
+    (is (not (s/valid? ::alphabet/distinct alphabet)))
+    (is (s/valid? ::alphabet/min-length alphabet))))
 
 (deftest too-short-of-an-alphabet
-  (alphabet-spec-fails "ab" ::spec/alphabet-min-length))
+  (let [alphabet "ab"]
+    (is (not (s/valid? ::alphabet/alphabet alphabet)))
+    (is (s/valid? ::alphabet/no-multibyte alphabet))
+    (is (s/valid? ::alphabet/distinct alphabet))
+    (is (not (s/valid? ::alphabet/min-length alphabet)))))

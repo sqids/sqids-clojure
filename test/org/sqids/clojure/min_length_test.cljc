@@ -1,7 +1,12 @@
 (ns org.sqids.clojure.min-length-test
   (:require
     [clojure.test :as t :refer [deftest is]]
-    [org.sqids.clojure :as sut]))
+    [clojure.test.check.generators]
+    [clojure.test.check.properties]
+    [org.sqids.clojure :as sut]
+    [org.sqids.clojure.test-util :as u]))
+
+(u/orch-instrument)
 
 (def min-length
   (count "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
@@ -61,8 +66,7 @@
                        [1 2 3 4 5 6 7 8 9 10]
                        [100 200 300]
                        [1000 2000 30000]
-                       [(long #?(:clj Integer/MAX_VALUE
-                                 :cljs js/Number.MAX_SAFE_INTEGER))]]]
+                       [u/large-number]]]
         (let [id (sut/encode sqids numbers)]
           (is (<= min-length (count id)))
           (is (= numbers (sut/decode sqids id))))))))

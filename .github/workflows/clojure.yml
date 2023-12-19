@@ -49,10 +49,16 @@ jobs:
           key: ${{ runner.os }}-clojure-${{ hashFiles('deps.edn') }}
       - name: Install Clojure
         run: |
+          cd /tmp
           curl -L -O https://github.com/clojure/brew-install/releases/latest/download/posix-install.sh
           chmod +x posix-install.sh
           sudo ./posix-install.sh
-          rm posix-install.sh
+      - name: Install cljstyle
+        run: |
+          cd /tmp
+          curl -sLO https://raw.githubusercontent.com/greglook/cljstyle/main/script/install-cljstyle
+          chmod +x install-cljstyle
+          sudo ./install-cljstyle
       - name: Run pre-commit hooks
         run: |
           pip install -r requirements.txt

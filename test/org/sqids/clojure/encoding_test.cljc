@@ -2,13 +2,15 @@
   (:require
     [clojure.spec.alpha :as s]
     [clojure.test :as t :refer [deftest is]]
+    [clojure.test.check.generators]
+    [clojure.test.check.properties]
     [org.sqids.clojure :as sut]
-    [org.sqids.clojure.platform :as platform]
-    [org.sqids.clojure.spec :as spec])
-  #?(:clj
-     (:import
-       (clojure.lang
-         ExceptionInfo))))
+    [org.sqids.clojure.decoding :as decoding]
+    [org.sqids.clojure.encoding :as encoding]
+    [org.sqids.clojure.spec]
+    [org.sqids.clojure.test-util :as u]))
+
+(u/orch-instrument)
 
 (def sqids
   (sut/sqids))
@@ -16,11 +18,10 @@
 (deftest simple-test
   (let [numbers [1 2 3]
         id      "86Rf07"]
-    (is (= id (sut/encode sqids numbers)))
-    (is (= numbers (sut/decode sqids id)))))
+    (is (= id (sut/encode sqids numbers))) (is (= numbers (sut/decode sqids id)))))
 
 (deftest different-inputs-test
-  (let [numbers [0 0 0 1 2 3 100 1000 100000 1000000 platform/max-value]]
+  (let [numbers [0 0 0 1 2 3 100 1000 100000 1000000 u/large-number]]
     (is (= numbers (->> numbers
                         (sut/encode sqids)
                         (sut/decode sqids))))))
@@ -53,19 +54,19 @@
 (deftest decode-invalid-character-test
   (is (= [] (sut/decode sqids "*"))))
 
-(defn nat-ints-spec-fails
-  [number]
-  (let [e
-        (is (thrown? ExceptionInfo (sut/encode sqids [number])))
+(deftest large-number-test
+  (let [numbers [u/large-number]
+        id      "ABARpJzdz9"]
+    (is (= id (sut/encode sqids numbers)))
+    (is (= numbers (sut/decode sqids id)))))
 
-        {::s/keys [problems]}
-        (ex-data e)]
+(deftest encoding-numbers-spec-test
+  (is (not (s/valid? ::encoding/numbers [nil])))
+  (is (not (s/valid? ::encoding/numbers [1.1])))
+  (is (not (s/valid? ::encoding/numbers [-1])))
+  (is (s/valid? ::encoding/numbers [123])))
 
-    (is (= 1 (count problems)))
-    (let [{:keys [via val]} (first problems)]
-      (is (= number val))
-      (is (= ::spec/nat-ints (last via))))))
-
-(deftest encode-out-of-range-numbers-test
-  (nat-ints-spec-fails -1)
-  (nat-ints-spec-fails platform/max-value+1))
+(deftest decoding-numbers-spec-test
+  (is (not (s/valid? ::decoding/numbers [nil])))
+  (is (not (s/valid? ::decoding/numbers [1.1])))
+  (is (s/valid? ::decoding/numbers [(+ u/large-number 1)])))
