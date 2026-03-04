@@ -23,7 +23,7 @@ jobs:
         name: Set up Java
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 21
       - uses: actions/setup-python@v4
         name: Set up Python
         with:
@@ -34,10 +34,6 @@ jobs:
         with:
           path: ~/.cache/pre-commit
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-      - name: Docker cache
-        uses: ScribeMD/docker-cache@0.3.6
-        with:
-          key: ${{ runner.os }}-docker-${{ hashFiles('.pre-commit-config.yaml') }}
       - uses: actions/cache@v3
         name: Clojure cache
         with:
@@ -47,19 +43,79 @@ jobs:
             ~/.clojure
             ~/.cpcache
           key: ${{ runner.os }}-clojure-${{ hashFiles('deps.edn') }}
-      - name: Install Clojure
-        run: |
-          curl -L -O https://github.com/clojure/brew-install/releases/latest/download/posix-install.sh
-          chmod +x posix-install.sh
-          sudo ./posix-install.sh
-          rm posix-install.sh
+      - name: Install Clojure tools
+        uses: DeLaGuardo/setup-clojure@13
+        with:
+          cli: latest
+          bb: latest
+          clj-kondo: 2026.01.19
+          cljstyle: 0.15.0
       - name: Run pre-commit hooks
         run: |
           pip install -r requirements.txt
-          pre-commit run --all-files
-      - name: Run clj tests
-        run: bin/test clj
-      - name: Run cljs tests
+          SKIP=kaocha-test pre-commit run --all-files
+      - name: Run tests
         run: |
           npm install
-          bin/test cljs
+          bin/kaocha
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: target/coverage
+          if-no-files-found: warn
+      - name: Upload JUnit XML artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-xml
+          path: target/test-results/junit.xml
+          if-no-files-found: warn
+
+  spec-parity:
+    runs-on: ubuntu-latest
+
+    env:
+      SQIDS_SPEC_DIR: ${{ github.workspace }}/target/sqids-spec
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Check out repository
+      - uses: actions/checkout@v3
+        name: Check out sqids-spec
+        with:
+          repository: sqids/sqids-spec
+          ref: main
+          path: target/sqids-spec
+      - uses: actions/setup-node@v4
+        name: Set up Node
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            target/sqids-spec/package-lock.json
+      - uses: actions/setup-java@v4
+        name: Set up Java
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: actions/cache@v3
+        name: Clojure cache
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.clojure
+            ~/.cpcache
+          key: ${{ runner.os }}-clojure-${{ hashFiles('deps.edn') }}
+      - name: Install Clojure tools
+        uses: DeLaGuardo/setup-clojure@13
+        with:
+          cli: latest
+      - name: Install sqids-spec dependencies
+        working-directory: target/sqids-spec
+        run: npm ci
+      - name: Run sqids-spec parity
+        run: bin/parity

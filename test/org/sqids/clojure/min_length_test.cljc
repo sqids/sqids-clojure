@@ -1,27 +1,36 @@
 (ns org.sqids.clojure.min-length-test
   (:require
-    [clojure.test :as t :refer [deftest is]]
-    [org.sqids.clojure :as sut]))
+    [clojure.spec.alpha :as s]
+    [clojure.test :as t]
+    [org.sqids.clojure :as sut]
+    [org.sqids.clojure.init :as init])
+  #?(:clj
+     (:import
+       (clojure.lang
+         ExceptionInfo))))
 
 (def min-length
+  "Maximum alphabet size used in min-length boundary tests."
   (count "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 
 (defn make
-  [min-length]
-  (sut/sqids {:min-length min-length}))
+  "Builds a Sqids config for a specific minimum output length."
+  [minimum-length]
+  (sut/sqids {:min-length minimum-length}))
 
 (def sqids
+  "Sqids instance configured with the maximum tested minimum length."
   (make min-length))
 
-(deftest simple-test
+(t/deftest simple-test
   (let [numbers [1 2 3]
         id      "86Rf07xd4zBmiJXQG6otHEbew02c3PWsUOLZxADhCpKj7aVFv9I8RquYrNlSTM"]
-    (is (= id (sut/encode sqids numbers)))
-    (is (= numbers (sut/decode sqids id)))))
+    (t/is (= id (sut/encode sqids numbers)))
+    (t/is (= numbers (sut/decode sqids id)))))
 
-(deftest incremental-test
+(t/deftest incremental-test
   (let [numbers [1 2 3]]
-    (doseq [[min-length id]
+    (doseq [[target-min-length expected-id]
             [[6 "86Rf07"]
              [7 "86Rf07x"]
              [8 "86Rf07xd"]
@@ -31,14 +40,14 @@
              [12 "86Rf07xd4zBm"]
              [13 "86Rf07xd4zBmi"]
              [(+ min-length 0) "86Rf07xd4zBmiJXQG6otHEbew02c3PWsUOLZxADhCpKj7aVFv9I8RquYrNlSTM"]
-             [(+ min-length 1) "86Rf07xd4zBmiJXQG6otHEbew02c3PWsUOLZxADhCpKj7aVFv9I8RquYrNlSTMy"]
+             [(inc min-length) "86Rf07xd4zBmiJXQG6otHEbew02c3PWsUOLZxADhCpKj7aVFv9I8RquYrNlSTMy"]
              [(+ min-length 2) "86Rf07xd4zBmiJXQG6otHEbew02c3PWsUOLZxADhCpKj7aVFv9I8RquYrNlSTMyf"]
              [(+ min-length 3) "86Rf07xd4zBmiJXQG6otHEbew02c3PWsUOLZxADhCpKj7aVFv9I8RquYrNlSTMyf1"]]]
-      (let [sqids (make min-length)]
-        (is (= id (sut/encode sqids numbers)))
-        (is (= numbers (sut/decode sqids id)))))))
+      (let [sqids-config (make target-min-length)]
+        (t/is (= expected-id (sut/encode sqids-config numbers)))
+        (t/is (= numbers (sut/decode sqids-config expected-id)))))))
 
-(deftest incremental-numbers-test
+(t/deftest incremental-numbers-test
   (doseq [[id & numbers]
           [["SvIzsqYMyQwI3GWgJAe17URxX8V924Co0DaTZLtFjHriEn5bPhcSkfmvOslpBu" 0 0]
            ["n3qafPOLKdfHpuNw3M61r95svbeJGk7aAEgYn4WlSjXURmF8IDqZBy0CT2VxQc" 0 1]
@@ -50,19 +59,37 @@
            ["74dID7X28VLQhBlnGmjZrec5wTA1fqpWtK4YkaoEIM9SRNiC3gUJH0OFvsPDdy" 0 7]
            ["30WXpesPhgKiEI5RHTY7xbB1GnytJvXOl2p0AcUjdF6waZDo9Qk8VLzMuWrqCS" 0 8]
            ["moxr3HqLAK0GsTND6jowfZz3SUx7cQ8aC54Pl1RbIvFXmEJuBMYVeW9yrdOtin" 0 9]]]
-    (is (= id (sut/encode sqids numbers)))
-    (is (= numbers (sut/decode sqids id)))))
+    (t/is (= id (sut/encode sqids numbers)))
+    (t/is (= numbers (sut/decode sqids id)))))
 
-(deftest min-lengths-test
-  (doseq [min-length [0 1 5 10 min-length]]
-    (let [sqids (make min-length)]
+(t/deftest min-lengths-test
+  (doseq [target-min-length [0 1 5 10 min-length]]
+    (let [sqids-config (make target-min-length)]
       (doseq [numbers [[0]
                        [0 0 0 0 0]
                        [1 2 3 4 5 6 7 8 9 10]
                        [100 200 300]
-                       [1000 2000 30000]
-                       [(long #?(:clj Integer/MAX_VALUE
+                       [1000 2000 3000]
+                       [1000000]
+                       [(long #?(:clj Long/MAX_VALUE
                                  :cljs js/Number.MAX_SAFE_INTEGER))]]]
-        (let [id (sut/encode sqids numbers)]
-          (is (<= min-length (count id)))
-          (is (= numbers (sut/decode sqids id))))))))
+        (let [id (sut/encode sqids-config numbers)]
+          (t/is (<= target-min-length (count id)))
+          (t/is (= numbers (sut/decode sqids-config id))))))))
+
+(defn min-length-spec-fails
+  "Asserts Sqids initialization fails for an invalid `:min-length` value."
+  [value]
+  (let [e
+        (t/is (thrown? #?(:clj ExceptionInfo :cljs cljs.core/ExceptionInfo)
+                (sut/sqids {:min-length value})))
+
+        {::s/keys [problems]}
+        (ex-data e)]
+
+    (t/is (seq problems))
+    (t/is (some #(= ::init/min-length (last (:via %))) problems))))
+
+(t/deftest invalid-min-length-test
+  (min-length-spec-fails -1)
+  (min-length-spec-fails 256))

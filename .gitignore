@@ -1,4 +1,5 @@
-*.class *.iml
+*.class
+*.iml
 *.jar
 *.log
 *.swp
@@ -7,13 +8,19 @@
 .calva/output-window/
 .classpath
 .clj-kondo/.cache
+.cljs_node_repl/
 .cpcache
+.cpcache/
 .eastwood
 .factorypath
 .hg/
 .hgignore
 .idea
 .lein-*
+.lein-deps-sum
+.lein-failures
+.lein-plugins/
+.lein-repl-history
 .lsp/.cache
 .lsp/sqlite.db
 .nrepl-*
@@ -28,9 +35,14 @@
 .sw*
 .vscode
 /checkouts
+/checkouts/
 /classes
+/classes/
+/lib/
+/out
 /src/gen
 /target
+/target/
 Brewfile.lock.json
 cljs-test-runner-out/
 node_modules/

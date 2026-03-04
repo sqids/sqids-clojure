@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euxfo pipefail
+
+: "${SQIDS_SPEC_DIR:?SQIDS_SPEC_DIR must point to a checked-out sqids-spec repository}"
+
+clojure -M:dev:clj -m org.sqids.clojure.parity-runner "$@"

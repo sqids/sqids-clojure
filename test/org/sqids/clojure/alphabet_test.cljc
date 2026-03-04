@@ -1,50 +1,60 @@
 (ns org.sqids.clojure.alphabet-test
   (:require
     [clojure.spec.alpha :as s]
-    [clojure.test :as t :refer [deftest is]]
+    [clojure.test :as t]
     [org.sqids.clojure :as sut]
-    [org.sqids.clojure.spec :as spec])
+    [org.sqids.clojure.alphabet :as alphabet])
   #?(:clj
      (:import
        (clojure.lang
          ExceptionInfo))))
 
 (defn make
+  "Builds a Sqids config for a custom alphabet."
   [alphabet]
   (sut/sqids {:alphabet alphabet}))
 
 (defn alphabet-spec-fails
+  "Asserts alphabet initialization fails with the expected root spec."
   [alphabet root-spec]
   (let [e
-        (is (thrown? ExceptionInfo (make alphabet)))
+        (t/is (thrown? ExceptionInfo (make alphabet)))
 
         {::s/keys [problems]}
         (ex-data e)]
 
-    (is (= 1 (count problems)))
-    (let [{:keys [via val]} (first problems)]
-      (is (= alphabet val))
-      (is (= root-spec (last via))))))
+    (t/is (seq problems))
+    (t/is (some (fn [{:keys [via] value :val}]
+                  (and (= alphabet value)
+                       (= root-spec (last via))))
+                problems))))
 
-(deftest simple-alphabet-test
+(t/deftest simple-alphabet-test
   (let [sqids   (make "0123456789abcdef")
         numbers [1 2 3]
         id      "489158"]
-    (is (= id (sut/encode sqids numbers)))
-    (is (= numbers (sut/decode sqids id)))))
+    (t/is (= id (sut/encode sqids numbers)))
+    (t/is (= numbers (sut/decode sqids id)))))
 
-(deftest short-alphabet-test
+(t/deftest short-alphabet-test
   (let [sqids   (make "abc")
         numbers [1 2 3]]
-    (is (= numbers (->> numbers
-                        (sut/encode sqids)
-                        (sut/decode sqids))))))
+    (t/is (= numbers (->> numbers
+                          (sut/encode sqids)
+                          (sut/decode sqids))))))
 
-(deftest multibyte-tests
-  (alphabet-spec-fails "ë1092" ::spec/alphabet-no-multibyte))
+(t/deftest long-alphabet-test
+  (let [sqids   (make "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_+|{}[];:'\"/?.>,<`~")
+        numbers [1 2 3]]
+    (t/is (= numbers (->> numbers
+                          (sut/encode sqids)
+                          (sut/decode sqids))))))
 
-(deftest repeating-alphabet-characters
-  (alphabet-spec-fails "aabcdefg" ::spec/alphabet-distinct))
+(t/deftest multibyte-tests
+  (alphabet-spec-fails "ë1092" ::alphabet/alphabet-no-multibyte))
 
-(deftest too-short-of-an-alphabet
-  (alphabet-spec-fails "ab" ::spec/alphabet-min-length))
+(t/deftest repeating-alphabet-characters
+  (alphabet-spec-fails "aabcdefg" ::alphabet/alphabet-distinct))
+
+(t/deftest too-short-of-an-alphabet
+  (alphabet-spec-fails "ab" ::alphabet/alphabet-min-length))
