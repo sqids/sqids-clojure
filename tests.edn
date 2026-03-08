@@ -1,0 +1,46 @@
+#kaocha/v1
+{:plugins
+ [:kaocha.plugin/cloverage
+  :kaocha.plugin/junit-xml]
+
+ :reporter
+ [kaocha.report/documentation]
+
+ :tests
+ [{:id           :unit
+   :source-paths ["src"]
+   :test-paths   ["test"]
+   :ns-patterns  [".*-test$"]}
+
+  {:id           :cljs
+   :type         :kaocha.type/cljs
+   :source-paths ["src"]
+   :test-paths   ["test"]
+   :ns-patterns  [".*-test$"]
+   :cljs/repl-env cljs.repl.node/repl-env
+   :cljs/timeout 30000}
+
+  {:id                                 :generative-fdef-checks
+   :type                               :kaocha.type/spec.test.check
+   :source-paths                       ["src"]
+   :clojure.spec.test.check/instrument? true}]
+
+ ;; Default cloverage output for `bin/kaocha`.
+ :cloverage/opts
+ {:output   "target/coverage"
+  :exclude-call [clojure.spec.alpha/def
+                 clojure.spec.alpha/and
+                 clojure.spec.alpha/or
+                 clojure.spec.alpha/keys
+                 clojure.spec.alpha/multi-spec
+                 clojure.core/loop
+                 clojure.core/when-some]
+  :fail-threshold 100
+  :codecov? true
+  :lcov? true
+  :summary? true
+  :html?    true
+  :text?    false}
+
+ :kaocha.plugin.junit-xml/target-file
+ "target/test-results/junit.xml"}

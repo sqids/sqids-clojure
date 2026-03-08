@@ -1,22 +1,27 @@
 (ns build
-  (:refer-clojure :exclude [test])
   (:require
     [clojure.string :as str]
     [clojure.tools.build.api :as b]
     [deps-deploy.deps-deploy :as dd]))
 
-(def lib 'org.sqids/sqids-clojure)
+(def lib
+  "Library coordinate for release artifacts."
+  'org.sqids/sqids-clojure)
 
 (def versions
+  "Map of release and snapshot version strings."
   (let [major   1
-        minor   0
-        commits {:release  (b/git-count-revs nil)
+        minor   1
+        patch   {:release  0
                  :snapshot "9999-SNAPSHOT"}]
-    (update-vals commits #(str/join "." [major minor %]))))
+    (update-vals patch #(str/join "." [major minor %]))))
 
-(def class-dir "target/classes")
+(def class-dir
+  "Compilation output directory used by tools.build."
+  "target/classes")
 
 (defn- pom-template
+  "Builds pom metadata entries for a given version."
   [version]
   [[:description "Official Clojure port of Sqids. Generate short YouTube-looking IDs from numbers."]
    [:url "https://github.com/sqids/sqids-clojure"]
@@ -34,6 +39,7 @@
     [:tag (str "v" version)]]])
 
 (defn jar-opts
+  "Returns normalized build options for jar/install/deploy tasks."
   [opts]
   (let [version (versions (if (:snapshot opts) :snapshot :release))]
     (assoc opts
@@ -43,7 +49,7 @@
            :basis     (b/create-basis {:aliases [:clj]})
            :class-dir class-dir
            :target    "target"
-           :src-dirs  ["src"]
+           :src-dirs  ["src" "resources"]
            :pom-data  (pom-template version))))
 
 (defn jar
@@ -54,7 +60,7 @@
     (println "\nWriting pom.xml...")
     (b/write-pom opts)
     (println "\nCopying source...")
-    (b/copy-dir {:src-dirs ["src"] :target-dir class-dir})
+    (b/copy-dir {:src-dirs ["src" "resources"] :target-dir class-dir})
     (println "\nBuilding JAR..." (:jar-file opts))
     (b/jar opts))
   opts)

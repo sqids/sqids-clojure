@@ -1,8 +1,6 @@
 {
-  "dependencies": {
-    "sqids": "0.3.0"
-  },
   "devDependencies": {
-    "shadow-cljs": "^3.3.6"
+    "shadow-cljs": "^3.3.6",
+    "ws": "^8.19.0"
   }
 }

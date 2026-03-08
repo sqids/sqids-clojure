@@ -7,32 +7,27 @@ YouTube-looking IDs from numbers. It's good for link shortening, fast &
 URL-safe ID generation and decoding back into numbers for quicker database
 lookups.
 
-`sqids-clojure` supports both Clojure and ClojureScript! In a Clojure
-environment, `sqids-clojure` wraps
-[`sqids-java`](https://github.com/sqids/sqids-java). In a ClojureScript
-environment, `sqids-clojure` wraps
-[`sqids-javascript`](https://github.com/sqids/sqids-javascript).
-
-If you notice any issues with decoding or encoding, these are likely an issue in
-the upstream wrapped Sqids library.
+`sqids-clojure` supports both Clojure and ClojureScript with a shared pure
+implementation in this repository.
 
 ## Getting started
 
 [CLI/`deps.edn`](https://clojure.org/reference/deps_and_cli) dependency
-information:
+information (replace with the latest version from
+[Clojars](https://clojars.org/org.sqids/sqids-clojure)):
 
 ```clojure
 ;; maven
-org.sqids/sqids-clojure {:mvn/version "1.0.15"}
+org.sqids/sqids-clojure {:mvn/version "1.1.0"}
 ```
 
 [Leiningen](https://leiningen.org/) dependency information:
 
 ```clojure
-[org.sqids/sqids-clojure "1.0.15"]
+[org.sqids/sqids-clojure "1.1.0"]
 ```
 
-After installation, require `sqids-clojure`:
+After installation, require the `org.sqids.clojure` namespace:
 
 ```clojure
 (require '[org.sqids.clojure :as sqids])
@@ -52,6 +47,50 @@ Simple encode & decode:
 (def numbers
   (sqids/decode sqids id)) ; [1 2 3]
 ```
+
+## Development
+
+Run the local checks before opening a PR:
+
+```bash
+bin/setup
+bin/_clj-kondo --lint src test bin/update-blocklist build.clj deps.edn tests.edn shadow-cljs.edn
+bin/kaocha
+pre-commit run --all-files
+```
+
+Run the upstream parity check against a checked-out `sqids-spec` repository:
+
+```bash
+SQIDS_SPEC_DIR=/path/to/sqids-spec bin/parity
+```
+
+`bin/setup` is optimized for macOS/Homebrew (`brew bundle` + `npm install`).
+On other platforms, install Java, Clojure CLI, Babashka, Node.js, Python, and
+`pre-commit` manually, then run `npm install`.
+
+`bin/kaocha` runs all configured Kaocha suites (`clojure.test`, automatic
+`clojure.spec.test.check`, and ClojureScript). It enforces 100% cloverage on
+the tracked runtime namespaces and writes reports to `target/coverage/`:
+`index.html`, `lcov.info`, and `codecov.json`. It also emits JUnit XML to
+`target/test-results/junit.xml`.
+
+`bin/parity` is a separate JVM-only check. It uses `clojure.spec` generators
+within the shared JavaScript-safe integer domain, evaluates the same cases with
+the checked-out `sqids-spec` TypeScript implementation, and compares those
+results to this library.
+
+Generator-heavy `clojure.spec` helpers live in mirrored namespaces under
+`src/org/sqids/clojure/generators/`, while the owning runtime namespaces keep
+the specs and algorithm code.
+
+Refresh the default bundled blocklist from the Sqids spec repository:
+
+```bash
+bin/update-blocklist
+```
+
+This updates `resources/org/sqids/clojure/blocklist.json`.
 
 > **Note**
 > 🚧 Because of the algorithm's design, **multiple IDs can decode back into the

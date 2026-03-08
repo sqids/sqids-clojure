@@ -1,38 +1,52 @@
 repos:
-  - repo: https://github.com/clj-kondo/clj-kondo
-    rev: v2023.10.20
-    hooks:
-      - id: clj-kondo-docker
-        pass_filenames: false
-        require_serial: true
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: check-shebang-scripts-are-executable
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-added-large-files
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.7.0-4
+    rev: v3.12.0-2
     hooks:
-      - id: shfmt-docker
-        entry: mvdan/shfmt:v3.7.0
+      - id: shfmt
         args: [-w, -s, -i, "2"]
   - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.9.0
+    rev: v0.11.0
     hooks:
       - id: shellcheck
   - repo: local
     hooks:
+      - id: clj-kondo
+        name: clj-kondo
+        entry: bin/_clj-kondo --lint src test bin/update-blocklist build.clj deps.edn tests.edn shadow-cljs.edn
+        language: system
+        pass_filenames: false
+        require_serial: true
       - id: cljstyle
         name: cljstyle
         entry: bin/_cljstyle fix
         language: system
         types: [file]
+      - id: kaocha-test
+        name: kaocha-test
+        entry: bin/kaocha
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: markdownlint-cli2
+        name: markdownlint-cli2
+        language: node
+        entry: markdownlint-cli2
+        additional_dependencies: ["markdownlint-cli2@0.21.0"]
+        types: [markdown]
+        args: ["--config", ".markdownlint-cli2.yaml", "--fix"]
       - id: prettier
         name: prettier
-        language: docker_image
-        entry: tmknom/prettier
+        language: node
+        entry: prettier
+        additional_dependencies: ["prettier@3.8.1"]
         types: [text]
         args: [--write, --list-different, --ignore-unknown]
       - id: git-diff

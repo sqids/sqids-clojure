@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euxfo pipefail
+
+clojure -M:dev:clj:test "$@"
