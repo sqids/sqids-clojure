@@ -1,38 +1,52 @@
 repos:
-  - repo: https://github.com/clj-kondo/clj-kondo
-    rev: v2023.10.20
-    hooks:
-      - id: clj-kondo-docker
-        pass_filenames: false
-        require_serial: true
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
     hooks:
       - id: check-shebang-scripts-are-executable
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-added-large-files
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.7.0-4
+    rev: 479be5958357ba5ab65ce47172117348516860e9 # v3.14.1-1
     hooks:
-      - id: shfmt-docker
-        entry: mvdan/shfmt:v3.7.0
+      - id: shfmt
         args: [-w, -s, -i, "2"]
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.9.0
-    hooks:
-      - id: shellcheck
   - repo: local
     hooks:
+      - id: shellcheck
+        name: ShellCheck v0.11.0
+        entry: shellcheck
+        language: python
+        additional_dependencies: ["shellcheck-py==0.11.0.1"]
+        types: [shell]
+      - id: clj-kondo
+        name: clj-kondo
+        entry: clojure -M:clj-kondo --lint src test dev bin/update-blocklist build.clj deps.edn tests.edn shadow-cljs.edn
+        language: system
+        pass_filenames: false
+        require_serial: true
       - id: cljstyle
         name: cljstyle
-        entry: bin/_cljstyle fix
+        entry: clojure -M:cljstyle fix
         language: system
         types: [file]
+      - id: kaocha-test
+        name: kaocha-test
+        entry: bin/kaocha
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: markdownlint-cli2
+        name: markdownlint-cli2
+        language: system
+        entry: npm exec --no -- markdownlint-cli2
+        types: [markdown]
+        args: ["--config", ".markdownlint-cli2.yaml", "--fix"]
       - id: prettier
         name: prettier
-        language: docker_image
-        entry: tmknom/prettier
+        language: system
+        entry: npm exec --no -- prettier
         types: [text]
         args: [--write, --list-different, --ignore-unknown]
       - id: git-diff

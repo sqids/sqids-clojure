@@ -10,7 +10,7 @@ cljs)
   npx shadow-cljs -A:dev node-repl
   ;;
 *)
-  : "Usage: bin/repl clj|cljs" >&2
+  echo "Usage: bin/repl clj|cljs" >&2
   exit 1
   ;;
 esac

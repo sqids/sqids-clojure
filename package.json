@@ -1,8 +1,20 @@
 {
-  "dependencies": {
-    "sqids": "0.3.0"
+  "private": true,
+  "engines": {
+    "node": ">=22",
+    "npm": ">=11.10.0"
   },
   "devDependencies": {
-    "shadow-cljs": "^3.3.6"
+    "markdownlint-cli2": "0.23.3",
+    "prettier": "3.9.10",
+    "shadow-cljs": "3.5.7",
+    "ws": "8.22.0"
+  },
+  "overrides": {
+    "markdownlint-cli2": {
+      "katex": "0.18.10",
+      "markdown-it": "15.0.3",
+      "smol-toml": "1.9.1"
+    }
   }
 }

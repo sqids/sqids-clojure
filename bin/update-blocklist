@@ -1,0 +1,75 @@
+#!/usr/bin/env bb
+
+(set! *warn-on-reflection* true)
+
+(require
+  '[babashka.fs :as fs]
+  '[cheshire.core :as json]
+  '[clojure.string :as str])
+
+(def default-source-url
+  "Default upstream Sqids blocklist JSON URL."
+  "https://raw.githubusercontent.com/sqids/sqids-spec/main/src/blocklist.json")
+
+(def script-path
+  "Canonical path to this script."
+  (fs/canonicalize *file*))
+
+(def repo-root
+  "Repository root directory derived from `script-path`."
+  (-> script-path fs/parent fs/parent))
+
+(def default-output-path
+  "Default destination for the generated bundled blocklist."
+  (str (fs/path repo-root "resources" "org" "sqids" "clojure" "blocklist.json")))
+
+(def source-url
+  "Effective source URL, optionally overridden by the first CLI argument."
+  (or (first *command-line-args*) default-source-url))
+
+(def output-path
+  "Effective output path, optionally overridden by the second CLI argument."
+  (or (second *command-line-args*) default-output-path))
+
+(defn fail
+  "Prints `message` to stderr and exits with a non-zero status."
+  [message]
+  (binding [*out* *err*]
+    (println message))
+  (System/exit 1))
+
+(defn normalize-words
+  "Normalizes fetched words into a trimmed, sorted vector of unique strings."
+  [words]
+  (->> words
+       (map str/trim)
+       (remove str/blank?)
+       set
+       sort
+       vec))
+
+(defn parse-words
+  "Parses upstream JSON and returns normalized blocklist entries."
+  [body]
+  (let [data
+        (try
+          (json/parse-string body)
+          (catch Exception e
+            (fail (str "Failed to parse upstream blocklist JSON: " (.getMessage e)))))]
+    (when-not (and (sequential? data) (every? string? data))
+      (fail "Expected a JSON array of strings"))
+    (normalize-words data)))
+
+(defn run
+  "Fetches the upstream blocklist and writes the bundled JSON artifact."
+  []
+  (let [body  (try
+                (slurp source-url)
+                (catch Exception e
+                  (fail (str "Failed to fetch blocklist: " (.getMessage e)))))
+        words (parse-words body)]
+    (fs/create-dirs (fs/parent output-path))
+    (spit output-path (str (json/generate-string words {:pretty true}) "\n"))
+    (println (str "Wrote " (count words) " blocklist entries to " output-path))))
+
+(run)
