@@ -3,4 +3,4 @@
 set -euxfo pipefail
 
 brew bundle
-npm install
+npm ci

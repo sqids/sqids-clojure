@@ -1,1 +1,18 @@
-pre-commit
+# Python 3.11+ tooling and hook dependencies; also used as pip/build constraints.
+# Stable releases published before 2026-10-19 (14-day minimum age at update).
+cfgv==3.5.0
+distlib==0.4.4
+filelock==4.2.2
+identify==2.6.20
+nodeenv==1.11.0
+packaging==26.3
+platformdirs==4.13.4
+pre-commit==4.7.0
+python-discovery==1.6.3
+pyyaml==6.0.3
+ruamel-yaml==0.19.1
+setuptools==84.0.0
+setuptools-download==1.1.0
+shellcheck-py==0.11.0.1
+virtualenv==21.14.11
+wheel==0.48.0

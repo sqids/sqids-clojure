@@ -1,0 +1,35 @@
+#kaocha/v1
+{:plugins
+ [:kaocha.plugin/cloverage
+  :kaocha.plugin/junit-xml]
+
+ :reporter
+ [kaocha.report/documentation]
+
+ :tests
+ [{:id           :unit
+   :source-paths ["src"]
+   :test-paths   ["test"]
+   :ns-patterns  [".*-test$"]}
+
+  {:id           :cljs
+   :type         :kaocha.type/cljs
+   :source-paths ["src"]
+   :test-paths   ["test"]
+   :ns-patterns  [".*-test$"]
+   :cljs/repl-env cljs.repl.node/repl-env
+   :cljs/compiler-options {:output-dir "target/cljs-test"}
+   :cljs/timeout 30000}]
+
+ ;; Default cloverage output for `bin/kaocha`.
+ :cloverage/opts
+ {:output   "target/coverage"
+  :fail-threshold 90
+  :codecov? true
+  :lcov? true
+  :summary? true
+  :html?    true
+  :text?    false}
+
+ :kaocha.plugin.junit-xml/target-file
+ "target/test-results/junit.xml"}

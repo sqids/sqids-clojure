@@ -7,38 +7,50 @@ on:
     branches: ["main"]
   merge_group:
 
+permissions:
+  contents: read
+
+# Regular dependency updates must be at least 14 days old. These runtime pins
+# include urgent October 2026 security fixes for compromised eMudhra CAs:
+# https://nodejs.org/en/blog/release/v24.22.1/
+# https://adoptium.net/news/2026/10/temurin-october-2026-emudhra/
+# https://www.python.org/downloads/release/python-31410/
+# setup-python 7.1.0 also fixes bundled downloader dependencies:
+# https://github.com/actions/setup-python/pull/1347
+# https://github.com/actions/setup-python/pull/1350
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+
+    env:
+      PIP_CONSTRAINT: ${{ github.workspace }}/requirements.txt
+      PIP_BUILD_CONSTRAINT: ${{ github.workspace }}/requirements.txt
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         name: Check out repository
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         name: Set up Node
         with:
-          node-version: lts/*
+          node-version: "24.22.1"
           cache: npm
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         name: Set up Java
         with:
           distribution: temurin
-          java-version: 11
-      - uses: actions/setup-python@v4
+          java-version: "21.0.13+9"
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         name: Set up Python
         with:
-          python-version: 3.12
+          python-version: "3.14.10"
           cache: pip
-      - uses: actions/cache@v3
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: pre-commit cache
         with:
           path: ~/.cache/pre-commit
-          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-      - name: Docker cache
-        uses: ScribeMD/docker-cache@0.3.6
-        with:
-          key: ${{ runner.os }}-docker-${{ hashFiles('.pre-commit-config.yaml') }}
-      - uses: actions/cache@v3
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml', 'requirements.txt', '.github/workflows/clojure.yml') }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Clojure cache
         with:
           path: |
@@ -47,19 +59,80 @@ jobs:
             ~/.clojure
             ~/.cpcache
           key: ${{ runner.os }}-clojure-${{ hashFiles('deps.edn') }}
-      - name: Install Clojure
-        run: |
-          curl -L -O https://github.com/clojure/brew-install/releases/latest/download/posix-install.sh
-          chmod +x posix-install.sh
-          sudo ./posix-install.sh
-          rm posix-install.sh
+      - name: Install Clojure tools
+        uses: DeLaGuardo/setup-clojure@6d46099eae24853c33c0482f2bb54edf4f1a4c74 # 13.7.0
+        with:
+          cli: "1.12.6.1673"
+      - name: Install npm dependencies
+        run: npm ci --ignore-scripts
       - name: Run pre-commit hooks
         run: |
           pip install -r requirements.txt
-          pre-commit run --all-files
-      - name: Run clj tests
-        run: bin/test clj
-      - name: Run cljs tests
+          SKIP=kaocha-test pre-commit run --all-files
+      - name: Run tests
+        run: bin/kaocha
+      - name: Run benchmarks
         run: |
-          npm install
-          bin/test cljs
+          bin/benchmark
+          bin/benchmark-node
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-report
+          path: target/coverage
+          if-no-files-found: warn
+      - name: Upload JUnit XML artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: junit-xml
+          path: target/test-results/junit.xml
+          if-no-files-found: warn
+
+  spec-parity:
+    runs-on: ubuntu-24.04
+
+    env:
+      SQIDS_SPEC_DIR: ${{ github.workspace }}/target/sqids-spec
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        name: Check out repository
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        name: Check out sqids-spec
+        with:
+          repository: sqids/sqids-spec
+          ref: 49b8ad8ea0725ee79c374ceb098cf100b52b0ec5 # 2025-01-03
+          path: target/sqids-spec
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        name: Set up Node
+        with:
+          node-version: "24.22.1"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            target/sqids-spec/package-lock.json
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        name: Set up Java
+        with:
+          distribution: temurin
+          java-version: "21.0.13+9"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        name: Clojure cache
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.clojure
+            ~/.cpcache
+          key: ${{ runner.os }}-clojure-${{ hashFiles('deps.edn') }}
+      - name: Install Clojure tools
+        uses: DeLaGuardo/setup-clojure@6d46099eae24853c33c0482f2bb54edf4f1a4c74 # 13.7.0
+        with:
+          cli: "1.12.6.1673"
+      - name: Install sqids-spec dependencies
+        working-directory: target/sqids-spec
+        run: npm ci --ignore-scripts
+      - name: Run sqids-spec parity
+        run: bin/parity

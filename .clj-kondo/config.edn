@@ -1,0 +1,109 @@
+{:linters
+ {:aliased-namespace-symbol {:level :error}
+  :aliased-namespace-var-usage {:level :error}
+  :aliased-referred-var {:level :error}
+  :case-quoted-test {:level :error}
+  :case-symbol-test {:level :error}
+  :clj-kondo-config {:level :error}
+  :cond-else {:level :error}
+  :condition-always-true {:level :error}
+  :consistent-alias {:level :error
+                     :aliases {clojure.edn edn
+                               clojure.set set
+                               clojure.spec.alpha s
+                               clojure.spec.gen.alpha gen
+                               clojure.string str
+                               clojure.test t}}
+  :def-fn {:level :error}
+  :deprecated-namespace {:level :error}
+  :deprecated-var {:level :error}
+  :destructured-or-always-evaluates {:level :error}
+  :destructured-or-binding-of-same-map {:level :error}
+  :discouraged-java-method {:level :error}
+  :discouraged-namespace {:level :error}
+  :discouraged-tag {:level :error}
+  :discouraged-var {:level :error}
+  :do-template {:level :error}
+  :docstring-leading-trailing-whitespace {:level :error}
+  :docstring-no-summary {:level :error}
+  :duplicate-key-args {:level :error}
+  :duplicate-refer {:level :error}
+  :earmuffed-var-not-dynamic {:level :error}
+  :equals-expected-position {:level :error
+                             :position :first}
+  :equals-false {:level :error}
+  :equals-float {:level :error}
+  :equals-nil {:level :error}
+  :equals-true {:level :error}
+  :if-nil-return {:level :error}
+  :inline-def {:level :error}
+  :is-message-not-string {:level :error}
+  :keyword-binding {:level :error}
+  :line-length {:level :error
+                :max-line-length 120}
+  :locking-suspicious-lock {:level :error}
+  :loop-without-recur {:level :error}
+  :main-without-gen-class {:level :error}
+  :min-clj-kondo-version {:level :error}
+  :minus-one {:level :error}
+  :missing-body-in-when {:level :error}
+  :missing-clause-in-try {:level :error}
+  :missing-docstring {:level :error}
+  :missing-else-branch {:level :error}
+  :missing-protocol-method {:level :error}
+  :missing-test-assertion {:level :error}
+  :multiple-async-in-deftest {:level :error}
+  :non-arg-vec-return-type-hint {:level :error}
+  :not-empty? {:level :error}
+  :plus-one {:level :error}
+  :reduce-without-init {:level :error}
+  :redundant-call {:level :error}
+  :redundant-do {:level :error}
+  :redundant-expression {:level :error}
+  :redundant-fn-wrapper {:level :error}
+  :redundant-format {:level :error}
+  :redundant-ignore {:level :error}
+  :redundant-let {:level :error}
+  :redundant-let-binding {:level :error}
+  :redundant-nested-call {:level :error}
+  :redundant-primitive-coercion {:level :error}
+  :redundant-str-call {:level :error}
+  :refer {:level :error}
+  :refer-all {:level :error}
+  :redefined-var {:level :error}
+  :schema-misplaced-return {:level :error}
+  :self-requiring-namespace {:level :error}
+  :shadowed-fn-param {:level :error}
+  :shadowed-var {:level :error}
+  :single-key-in {:level :error}
+  :single-logical-operand {:level :error}
+  :single-operand-comparison {:level :error}
+  :underscore-in-namespace {:level :error}
+  :unbound-destructuring-default {:level :error}
+  :uninitialized-var {:level :error}
+  :unreachable-code {:level :error}
+  :unresolved-excluded-var {:level :error}
+  :unresolved-namespace {:level :error}
+  :unresolved-protocol-method {:level :error}
+  :unresolved-var {:level :error}
+  :unquote-not-syntax-quoted {:level :error}
+  :unsorted-imports {:level :error}
+  :unsorted-required-namespaces {:level :error
+                                 :sort :case-insensitive}
+  :unused-alias {:level :error}
+  :unused-binding {:level :error
+                   :exclude-destructured-keys-in-fn-args false
+                   :exclude-destructured-as false
+                   :exclude-defmulti-args false}
+  :unused-excluded-var {:level :error}
+  :unused-import {:level :error}
+  :unused-namespace {:level :error
+                     :simple-libspec false}
+  :unused-private-var {:level :error}
+  :unused-referred-var {:level :error}
+  :unused-value {:level :error}
+  :use {:level :error}
+  :used-underscored-binding {:level :error}
+  :var-same-name-except-case {:level :error}
+  :warn-on-reflection {:level :error
+                       :warn-only-on-interop true}}}
